@@ -1,8 +1,9 @@
 export type NavKey = "pos" | "receipts" | "menu" | "reports";
+export type NavHref = "/" | "/receipts" | "/menu" | "/reports";
 
 export type NavItem = {
   key: NavKey;
-  href: `/${string}`;
+  href: NavHref;
   label: string;
   icon: string;
 };
