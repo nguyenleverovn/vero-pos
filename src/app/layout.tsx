@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'VERO POS V1',
-  description: 'VERO POS V1 - First runnable UI shell for coffee POS flow'
+  description: 'VERO POS V1 - App foundation for VERO POS design system'
 }
 
 export default function RootLayout({
@@ -12,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="vi">
       <body>{children}</body>
     </html>
   )

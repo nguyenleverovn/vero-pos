@@ -1,10 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  content: [
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
-    './public/**/*.html'
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}', './public/**/*.html'],
   theme: {
     extend: {
       colors: {
@@ -20,17 +17,44 @@ const config: Config = {
           800: '#13337f',
           900: '#0b2a66'
         },
-        surface: '#f8fafc',
-        border: '#d2dcff',
-        success: '#10b981',
-        warning: '#f59e0b'
+        secondary: {
+          50: '#f2f6ff',
+          100: '#d8e3ff',
+          200: '#aebef8',
+          300: '#8092e8',
+          400: '#5670d4',
+          500: '#3046ba',
+          600: '#27389c',
+          700: '#202d84',
+          800: '#1a2470',
+          900: '#141a5f'
+        },
+        background: '#f3f6ff',
+        surface: '#f8f9fc',
+        foreground: '#0f1d3a',
+        muted: '#51608d',
+        border: '#d3ddff',
+        success: '#1fa34d',
+        warning: '#f5a524'
       },
       borderRadius: {
-        'xs': '0.25rem',
-        'sm': '0.375rem',
-        'md': '0.625rem',
-        'lg': '0.875rem',
-        'xl': '1.125rem'
+        sm: 'var(--radius-small)',
+        md: 'var(--radius-medium)',
+        lg: 'var(--radius-large)'
+      },
+      fontFamily: {
+        sans: ['"Trebuchet MS"', '"Segoe UI"', 'Arial', 'sans-serif'],
+        heading: ['"Trebuchet MS"', '"Segoe UI"', 'Arial', 'sans-serif'],
+        body: ['Inter', '"Segoe UI"', 'Arial', 'sans-serif']
+      },
+      spacing: {
+        1: 'var(--space-1)',
+        2: 'var(--space-2)',
+        3: 'var(--space-3)',
+        4: 'var(--space-4)',
+        5: 'var(--space-5)',
+        6: 'var(--space-6)',
+        8: 'var(--space-8)'
       },
       boxShadow: {
         card: '0 10px 24px rgba(13, 33, 87, 0.08)',
