@@ -22,11 +22,11 @@ export interface ProductSetupRepository {
   createProduct(draft: ProductDraft): Promise<SetupProduct>;
 }
 
-export function createMockProduct(draft: ProductDraft, sequence: number): SetupProduct {
+export function createMockProduct(draft: ProductDraft, sequence: number, active = true): SetupProduct {
   return {
     ...draft,
     id: `mock-product-${sequence}`,
-    active: true
+    active
   };
 }
 

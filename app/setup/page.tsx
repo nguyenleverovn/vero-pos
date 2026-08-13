@@ -15,6 +15,7 @@ export default function ProductSetupPage() {
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState<ProductCategoryId>("coffee");
   const [imageName, setImageName] = useState("");
+  const [active, setActive] = useState(true);
   const [products, setProducts] = useState<SetupProduct[]>([]);
 
   const priceVnd = Number(price);
@@ -30,7 +31,8 @@ export default function ProductSetupPage() {
 
     const product = createMockProduct(
       { name: name.trim(), priceVnd, categoryId },
-      products.length + 1
+      products.length + 1,
+      active
     );
 
     setProducts((current) => [...current, product]);
@@ -40,43 +42,42 @@ export default function ProductSetupPage() {
   }
 
   return (
-    <main className="vp-setup vp-onboarding">
+    <main className="vp-setup">
       <header className="vp-setup-header">
         <Link className="vp-setup-back" href="/welcome" aria-label="Quay lại trang chào mừng">
           <img src="/icons/chevron-left.svg" alt="" />
         </Link>
-        <div>
-          <span>Thiết lập ban đầu</span>
-          <h1>Thêm món mới</h1>
-        </div>
+        <h1>Thêm món mới</h1>
       </header>
 
       <form className="vp-setup-form" onSubmit={handleSubmit}>
         <label className="vp-image-upload">
           <input type="file" accept="image/*" onChange={handleImageChange} />
-          <span className="vp-image-upload-icon" aria-hidden="true">+</span>
-          <strong>{imageName || "Thêm hình ảnh"}</strong>
-          <small>Không bắt buộc</small>
+          <span className="vp-image-upload-icon" aria-hidden="true"><span /></span>
+          <strong>{imageName || "Tải ảnh lên"}</strong>
+          <small>Hỗ trợ tệp PNG, JPG dung lượng tối đa 5MB</small>
         </label>
 
         <label className="vp-setup-field">
           <span>Tên món <b>*</b></span>
-          <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ví dụ: Cà phê sữa" autoComplete="off" />
+          <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ví dụ: Cà phê Muối" autoComplete="off" />
         </label>
 
         <label className="vp-setup-field">
-          <span>Giá bán <b>*</b></span>
-          <div className="vp-price-input">
-            <input
-              value={price}
-              onChange={(event) => setPrice(event.target.value.replace(/\D/g, ""))}
-              placeholder="0"
-              inputMode="numeric"
-              aria-label="Giá bán"
-            />
-            <span>đ</span>
-          </div>
+          <span>Giá bán (đ) <b>*</b></span>
+          <input
+            value={price ? Number(price).toLocaleString("en-US") : ""}
+            onChange={(event) => setPrice(event.target.value.replace(/\D/g, ""))}
+            placeholder="45,000"
+            inputMode="numeric"
+            aria-label="Giá bán"
+          />
         </label>
+
+        <div className="vp-setup-status">
+          <div><strong>Trạng thái hoạt động</strong><span>Cho phép bán ngay sau khi tạo</span></div>
+          <button className={`vp-switch ${active ? "is-on" : ""}`} type="button" onClick={() => setActive((current) => !current)} aria-label={active ? "Tắt trạng thái hoạt động" : "Bật trạng thái hoạt động"} />
+        </div>
 
         <label className="vp-setup-field">
           <span>Danh mục <b>*</b></span>
@@ -108,7 +109,7 @@ export default function ProductSetupPage() {
         )}
 
         <div className="vp-setup-actions">
-          <button className="vp-primary-button vp-save-product" type="submit" disabled={!canSave}>Lưu món</button>
+          <button className="vp-primary-button vp-save-product" type="submit" disabled={!canSave}>Lưu món mới (1 chạm)</button>
           {products.length > 0 && <Link className="vp-start-selling" href="/">Bắt đầu bán hàng</Link>}
         </div>
       </form>

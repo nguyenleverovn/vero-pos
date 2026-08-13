@@ -16,7 +16,7 @@ export function Sidebar() {
       </div>
       <nav className="vp-sidebar-nav" aria-label="Điều hướng desktop">
         {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href || (pathname === "/checkout" && item.key === "pos");
+          const active = pathname === item.href || (pathname === "/checkout" && item.key === "pos") || (pathname === "/setup" && item.key === "menu");
           return <Link key={item.key} href={item.href} className={`vp-side-link ${active ? "is-active" : ""}`}><img src={item.icon} alt="" /><span>{item.label}</span></Link>;
         })}
       </nav>
