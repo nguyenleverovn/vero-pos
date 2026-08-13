@@ -1,11 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
+import { setInstallPrompt, VeroInstallPrompt } from "@/lib/pwa/installPrompt";
 
 export default function ServiceWorkerRegister() {
   useEffect(() => {
+    const captureInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as VeroInstallPrompt);
+    };
+    const clearInstallPrompt = () => setInstallPrompt(null);
+    window.addEventListener("beforeinstallprompt", captureInstallPrompt);
+    window.addEventListener("appinstalled", clearInstallPrompt);
+
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
-      return;
+      return () => {
+        window.removeEventListener("beforeinstallprompt", captureInstallPrompt);
+        window.removeEventListener("appinstalled", clearInstallPrompt);
+      };
     }
 
     if (process.env.NODE_ENV !== "production") {
@@ -15,7 +27,10 @@ export default function ServiceWorkerRegister() {
       if ("caches" in window) {
         void caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key))));
       }
-      return;
+      return () => {
+        window.removeEventListener("beforeinstallprompt", captureInstallPrompt);
+        window.removeEventListener("appinstalled", clearInstallPrompt);
+      };
     }
 
     const register = async () => {
@@ -31,6 +46,11 @@ export default function ServiceWorkerRegister() {
     };
 
     void register();
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", captureInstallPrompt);
+      window.removeEventListener("appinstalled", clearInstallPrompt);
+    };
   }, []);
 
   return null;
