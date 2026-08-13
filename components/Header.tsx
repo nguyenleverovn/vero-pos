@@ -2,7 +2,9 @@ export function Header() {
   return (
     <header className="vp-brand-header">
       <div className="vp-brand">
-        <img className="vp-brand-logo" src="/icons/vero-pos-logo.png" alt="VERO POS" />
+        <span className="vp-brand-logo" aria-hidden="true">
+          <img src="/icons/vero-pos-mark.png" alt="" />
+        </span>
         <div className="vp-brand-copy">
           <strong>VERO POS</strong>
           <span>CHẠM LÀ CHẠY</span>

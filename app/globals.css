@@ -47,7 +47,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .vp-screen--plain { padding-bottom: 110px; }
 .vp-brand-header { height: 57px; display: flex; align-items: center; justify-content: space-between; }
 .vp-brand { display: flex; align-items: center; gap: 8px; }
-.vp-brand-logo { width: 28px; height: 28px; border-radius: 6px; object-fit: contain; }
+.vp-brand-logo { width: 28px; height: 28px; flex: 0 0 28px; }
+.vp-brand-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .vp-brand-copy { display: grid; gap: 2px; }
 .vp-brand-copy strong { font-size: 16px; line-height: 19px; }
 .vp-brand-copy span { color: var(--vp-action); font-size: 10px; line-height: 12px; font-weight: 700; }
