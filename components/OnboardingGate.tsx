@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { isProductSetupComplete } from "@/lib/onboarding/productSetup";
+import { isProductSetupComplete } from "@/lib/repositories/productSetupRepository";
 
 export function OnboardingGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -12,14 +12,20 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
   const isWelcomePath = pathname === "/welcome";
 
   useEffect(() => {
-    const setupCompleted = isProductSetupComplete();
-    setCompleted(setupCompleted);
+    let cancelled = false;
 
-    if (!setupCompleted && !isSetupPath && !isWelcomePath) {
-      router.replace("/welcome");
-    } else if (setupCompleted && isWelcomePath) {
-      router.replace("/");
-    }
+    isProductSetupComplete().then((setupCompleted) => {
+      if (cancelled) return;
+      setCompleted(setupCompleted);
+
+      if (!setupCompleted && !isSetupPath && !isWelcomePath) {
+        router.replace("/welcome");
+      } else if (setupCompleted && isWelcomePath) {
+        router.replace("/");
+      }
+    });
+
+    return () => { cancelled = true; };
   }, [isSetupPath, isWelcomePath, pathname, router]);
 
   if (completed === null) return null;

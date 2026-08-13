@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CartItem, clearCart, getCartTotal, loadCart } from "@/lib/cart/cart";
 import { loadCatalog } from "@/lib/repositories/catalogRepository";
+import { PaymentMethod, saveOrder } from "@/lib/repositories/orderRepository";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const [items, setItems] = useState<CartItem[]>([]);
-  const [method, setMethod] = useState<"cash" | "transfer">("cash");
+  const [method, setMethod] = useState<PaymentMethod>("cash");
+  const [isCompleting, setIsCompleting] = useState(false);
   const due = getCartTotal(items);
-  const canComplete = due > 0;
+  const canComplete = due > 0 && !isCompleting;
 
   useEffect(() => {
     loadCatalog().then((catalog) => {
@@ -20,9 +22,17 @@ export default function CheckoutPage() {
     });
   }, []);
 
-  const completeCheckout = () => {
-    clearCart();
-    router.replace("/");
+  const completeCheckout = async () => {
+    if (!canComplete) return;
+    setIsCompleting(true);
+
+    try {
+      await saveOrder(items, method);
+      clearCart();
+      router.replace("/");
+    } finally {
+      setIsCompleting(false);
+    }
   };
 
   return (
@@ -41,7 +51,7 @@ export default function CheckoutPage() {
           </div>
         </section>
       </div>
-      <div className="vp-action-panel"><button className="vp-primary-button" type="button" disabled={!canComplete} onClick={completeCheckout}>HOÀN TẤT &amp; IN BILL (1 chạm)</button></div>
+      <div className="vp-action-panel"><button className="vp-primary-button" type="button" disabled={!canComplete} onClick={completeCheckout}>{isCompleting ? "ĐANG LƯU ĐƠN..." : "HOÀN TẤT & IN BILL (1 chạm)"}</button></div>
     </main>
   );
 }
