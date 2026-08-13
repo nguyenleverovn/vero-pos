@@ -311,9 +311,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .vp-side-link { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 16px; border-radius: 8px; color: var(--vp-muted); text-decoration: none; font-size: 14px; font-weight: 700; }
   .vp-side-link img { width: 20px; height: 20px; }
   .vp-side-link.is-active { background: #f2ece4; color: var(--vp-primary); }
-  .vp-cashier { margin-top: auto; padding: 12px; border-radius: 12px; background: var(--vp-background); }
-  .vp-cashier strong, .vp-cashier span { display: block; }
-  .vp-cashier span { color: var(--vp-muted); font-size: 11px; }
   .vp-bottom-nav { display: none; }
   .vp-screen { max-width: 1040px; min-height: 100dvh; padding: 24px 24px 40px; }
   .vp-screen--pos { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 24px; align-items: start; }
