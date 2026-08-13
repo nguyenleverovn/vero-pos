@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CartItem, getCartTotal, loadCart } from "@/lib/cart/cart";
+import { CartItem, clearCart, getCartTotal, loadCart } from "@/lib/cart/cart";
 import { loadCatalog } from "@/lib/repositories/catalogRepository";
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const [items, setItems] = useState<CartItem[]>([]);
   const [method, setMethod] = useState<"cash" | "transfer">("cash");
   const due = getCartTotal(items);
@@ -17,6 +19,11 @@ export default function CheckoutPage() {
       setItems(savedItems);
     });
   }, []);
+
+  const completeCheckout = () => {
+    clearCart();
+    router.replace("/");
+  };
 
   return (
     <main className="vp-screen vp-screen--action">
@@ -34,7 +41,7 @@ export default function CheckoutPage() {
           </div>
         </section>
       </div>
-      <div className="vp-action-panel"><button className="vp-primary-button" type="button" disabled={!canComplete}>HOÀN TẤT &amp; IN BILL (1 chạm)</button></div>
+      <div className="vp-action-panel"><button className="vp-primary-button" type="button" disabled={!canComplete} onClick={completeCheckout}>HOÀN TẤT &amp; IN BILL (1 chạm)</button></div>
     </main>
   );
 }

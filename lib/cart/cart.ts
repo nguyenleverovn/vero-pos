@@ -52,6 +52,11 @@ export function saveCart(items: CartItem[]): void {
   window.sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify(storedItems));
 }
 
+export function clearCart(): void {
+  if (typeof window === "undefined") return;
+  window.sessionStorage.removeItem(CART_STORAGE_KEY);
+}
+
 export function loadCart(products: Product[]): CartItem[] {
   if (typeof window === "undefined") return [];
 
