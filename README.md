@@ -12,6 +12,20 @@ Repository này là scaffold Next.js + TypeScript + Tailwind cho **VERO POS V1**
 - `src/data` – dữ liệu mẫu
 - `src/design-system` – tài liệu vận hành thiết kế (nền cho Figma handoff)
 
+## Quy trình merge (GitHub)
+
+- `main` chỉ chứa code ổn định và không commit trực tiếp.
+- Phát triển trên branch:
+  - `feature/*`
+  - `fix/*`
+  - `refactor/*`
+- Mọi thay đổi bắt buộc đi qua PR và được merge bằng squash.
+- PR phải có: `What changed`, `Why`, `Testing`.
+- Bắt buộc chạy trước merge: `npm run lint`, `npm run build`.
+- Chỉ merge khi không có conflict, đã review, và build/test pass.
+
+Xem chi tiết quy trình tại: `docs/merge-review-process.md`.
+
 ## Chạy project
 
 ```bash
