@@ -13,7 +13,7 @@ type CartProps = {
 };
 
 export function Cart({ items, onUpdateItem, onRemoveItem, onClearAll }: CartProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const total = getCartTotal(items);
   const count = getCartCount(items);
   const label = `${total.toLocaleString("vi-VN")} đ`;
@@ -33,7 +33,10 @@ export function Cart({ items, onUpdateItem, onRemoveItem, onClearAll }: CartProp
           onClick={() => setExpanded((current) => !current)}
         >
           <span className="vp-cart-count"><span className="vp-cart-badge">{count}</span>Món đã chọn</span>
-          <strong className="vp-cart-total">{label}</strong>
+          <span className="vp-cart-toggle-summary">
+            <strong className="vp-cart-total">{label}</strong>
+            <span>{expanded ? "Thu gọn" : "Sửa giỏ"}</span>
+          </span>
         </button>
         <div className="vp-cart-mobile-details">
           {hasItems ? (
