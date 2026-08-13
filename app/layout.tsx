@@ -3,6 +3,7 @@ import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { BottomNav } from "@/components/BottomNav";
 import { Sidebar } from "@/components/Sidebar";
+import { OnboardingGate } from "@/components/OnboardingGate";
 
 export const metadata: Metadata = {
   title: "VERO POS - Chạm là chạy",
@@ -20,11 +21,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="vi">
       <body>
-        <div className="vp-app-frame">
-          <Sidebar />
-          <div className="vp-content">{children}</div>
-        </div>
-        <BottomNav />
+        <OnboardingGate>
+          <div className="vp-app-frame">
+            <Sidebar />
+            <div className="vp-content">{children}</div>
+          </div>
+          <BottomNav />
+        </OnboardingGate>
         <ServiceWorkerRegister />
       </body>
     </html>

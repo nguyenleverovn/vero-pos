@@ -1,4 +1,4 @@
-export type CategoryId = "coffee" | "fruit-tea" | "blended" | "topping" | "other";
+export type CategoryId = string;
 
 export type Product = {
   id: string;
@@ -12,7 +12,7 @@ export type Product = {
 export type Category = { id: CategoryId; label: string };
 export type PosCatalog = {
   generatedAt: string;
-  source: "local-fixture-v1";
+  source: "local-fixture-v1" | "local-setup-v1";
   categories: Category[];
   products: Product[];
 };

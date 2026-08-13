@@ -1,25 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {
+  completeProductSetup,
+  createMockCategory,
   createMockProduct,
   getCategoryLabel,
+  loadProductSetup,
   PRODUCT_CATEGORIES,
+  ProductCategory,
   ProductCategoryId,
+  saveProductSetup,
   SetupProduct
 } from "@/lib/onboarding/productSetup";
 
 export default function ProductSetupPage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState<ProductCategoryId>("coffee");
+  const [categoryName, setCategoryName] = useState("");
   const [imageName, setImageName] = useState("");
   const [active, setActive] = useState(true);
+  const [categories, setCategories] = useState<ProductCategory[]>(PRODUCT_CATEGORIES);
   const [products, setProducts] = useState<SetupProduct[]>([]);
+  const [completed, setCompleted] = useState(false);
 
   const priceVnd = Number(price);
   const canSave = name.trim().length > 0 && Number.isFinite(priceVnd) && priceVnd > 0;
+  const canAddCategory = categoryName.trim().length > 0 && !categories.some((category) => category.label.toLocaleLowerCase("vi") === categoryName.trim().toLocaleLowerCase("vi"));
+
+  useEffect(() => {
+    const setup = loadProductSetup();
+    setCategories(setup.categories);
+    setProducts(setup.products);
+    setCompleted(setup.completed);
+    setCategoryId(setup.categories[0]?.id ?? "coffee");
+  }, []);
 
   function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
     setImageName(event.target.files?.[0]?.name ?? "");
@@ -35,16 +54,34 @@ export default function ProductSetupPage() {
       active
     );
 
-    setProducts((current) => [...current, product]);
+    const nextProducts = [...products, product];
+    setProducts(nextProducts);
+    saveProductSetup({ categories, products: nextProducts, completed });
     setName("");
     setPrice("");
     setImageName("");
   }
 
+  function handleAddCategory() {
+    if (!canAddCategory) return;
+
+    const category = createMockCategory(categoryName.trim(), categories.length + 1);
+    const nextCategories = [...categories, category];
+    setCategories(nextCategories);
+    setCategoryId(category.id);
+    setCategoryName("");
+    saveProductSetup({ categories: nextCategories, products, completed });
+  }
+
+  function handleStartSelling() {
+    completeProductSetup(categories, products);
+    router.push("/");
+  }
+
   return (
     <main className="vp-setup">
       <header className="vp-setup-header">
-        <Link className="vp-setup-back" href="/welcome" aria-label="Quay lại trang chào mừng">
+        <Link className="vp-setup-back" href={completed ? "/menu" : "/welcome"} aria-label="Quay lại">
           <img src="/icons/chevron-left.svg" alt="" />
         </Link>
         <h1>Thêm món mới</h1>
@@ -82,10 +119,14 @@ export default function ProductSetupPage() {
         <label className="vp-setup-field">
           <span>Danh mục <b>*</b></span>
           <select value={categoryId} onChange={(event) => setCategoryId(event.target.value as ProductCategoryId)}>
-            {PRODUCT_CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <option key={category.id} value={category.id}>{category.label}</option>
             ))}
           </select>
+          <div className="vp-category-create">
+            <input value={categoryName} onChange={(event) => setCategoryName(event.target.value)} placeholder="Tên danh mục mới" autoComplete="off" />
+            <button type="button" onClick={handleAddCategory} disabled={!canAddCategory}>Thêm</button>
+          </div>
         </label>
 
         {products.length > 0 && (
@@ -100,7 +141,7 @@ export default function ProductSetupPage() {
             <ul>
               {products.map((product) => (
                 <li key={product.id}>
-                  <div><strong>{product.name}</strong><span>{getCategoryLabel(product.categoryId)}</span></div>
+                  <div><strong>{product.name}</strong><span>{getCategoryLabel(product.categoryId, categories)}</span></div>
                   <b>{product.priceVnd.toLocaleString("vi-VN")}đ</b>
                 </li>
               ))}
@@ -110,7 +151,7 @@ export default function ProductSetupPage() {
 
         <div className="vp-setup-actions">
           <button className="vp-primary-button vp-save-product" type="submit" disabled={!canSave}>Lưu món mới (1 chạm)</button>
-          {products.length > 0 && <Link className="vp-start-selling" href="/">Bắt đầu bán hàng</Link>}
+          {products.length > 0 && <button className="vp-start-selling" type="button" onClick={handleStartSelling}>Bắt đầu bán hàng</button>}
         </div>
       </form>
     </main>
