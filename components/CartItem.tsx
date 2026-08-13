@@ -1,10 +1,5 @@
-import { Product } from "@/lib/data/catalog";
 import { QuantityControl } from "@/components/QuantityControl";
-
-export type CartItemPayload = {
-  product: Product;
-  quantity: number;
-};
+import { CartItem as CartItemPayload } from "@/lib/cart/cart";
 
 type CartItemProps = {
   item: CartItemPayload;
@@ -32,6 +27,7 @@ export function CartItem({ item, onChange, onRemove }: CartItemProps) {
         />
         <button
           className="vp-link-danger"
+          type="button"
           onClick={() => onRemove(item.product.id)}
           aria-label={`Xoá ${item.product.name}`}
         >
