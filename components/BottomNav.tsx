@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_ITEMS } from "@/lib/navigation";
+import { isOnboardingPath, NAV_ITEMS } from "@/lib/navigation";
 
 export function BottomNav() {
   const pathname = usePathname();
-  if (pathname === "/welcome") return null;
+  if (isOnboardingPath(pathname)) return null;
 
   return (
     <nav className="vp-bottom-nav" aria-label="Điều hướng chính">
