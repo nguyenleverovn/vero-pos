@@ -20,7 +20,6 @@ export function Sidebar() {
           return <Link key={item.key} href={item.href} className={`vp-side-link ${active ? "is-active" : ""}`}><img src={item.icon} alt="" /><span>{item.label}</span></Link>;
         })}
       </nav>
-      <div className="vp-cashier"><strong>Quầy số 1</strong><span>Thu ngân chính</span></div>
     </aside>
   );
 }
