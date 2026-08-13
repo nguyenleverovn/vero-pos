@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CategoryId, PosCatalog, Product } from "@/lib/data/catalog";
 import { CategoryTabs } from "@/components/CategoryTabs";
@@ -47,14 +48,20 @@ export default function VeroPosPage() {
         <Header />
         <CategoryTabs activeCategory={activeCategory} items={catalog.categories} onChange={setActiveCategory} />
         <section className="vp-product-grid" aria-label="Sản phẩm">
-          {visibleProducts.map((product) => (
+          {visibleProducts.length > 0 ? visibleProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
               quantity={items.find((item) => item.product.id === product.id)?.quantity ?? 0}
               onAdd={addToCart}
             />
-          ))}
+          )) : (
+            <div className="vp-pos-empty">
+              <strong>Danh mục này chưa có món</strong>
+              <span>Thêm món đầu tiên để bắt đầu bán hàng.</span>
+              <Link href="/setup">Thêm món mới</Link>
+            </div>
+          )}
         </section>
       </div>
       <Cart
