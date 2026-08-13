@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --space-unit: 4px;
+  --spacing-0: 0;
+  --spacing-1: calc(var(--space-unit) * 1);
+  --spacing-2: calc(var(--space-unit) * 2);
+  --spacing-3: calc(var(--space-unit) * 3);
+  --spacing-4: calc(var(--space-unit) * 4);
+  --spacing-5: calc(var(--space-unit) * 5);
+  --spacing-6: calc(var(--space-unit) * 6);
+
+  --font-heading: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f0f4ff;
+  color: #0b2040;
+  font-family: var(--font-body);
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: radial-gradient(circle at 0% 0%, #edf2ff 0%, #f5f8ff 35%, #f8f9ff 100%);
+}
+
+.hero-soft {
+  @apply rounded-xl bg-white/80 backdrop-blur shadow-card border border-border;
+}
