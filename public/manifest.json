@@ -2,7 +2,7 @@
   "name": "VERO POS",
   "short_name": "VERO POS",
   "description": "Chạm là chạy",
-  "start_url": "/",
+  "start_url": "/welcome",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
