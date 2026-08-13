@@ -19,6 +19,7 @@
       "@/app/*": ["./src/app/*"],
       "@/components/*": ["./src/components/*"],
       "@/lib/*": ["./src/lib/*"],
+      "@/types/*": ["./src/types/*"],
       "@/data/*": ["./src/data/*"],
       "@/design-system/*": ["./src/design-system/*"]
     },

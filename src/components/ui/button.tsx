@@ -1,31 +1,38 @@
 import { type ButtonHTMLAttributes } from 'react'
 
+type ButtonVariant = 'primary' | 'secondary' | 'danger'
+type ButtonSize = 'sm' | 'md' | 'lg'
+
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'secondary' | 'danger'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: ButtonVariant
+  size?: ButtonSize
 }
 
-const base = 'inline-flex items-center justify-center rounded-md font-semibold transition-colors disabled:opacity-60'
+const baseClasses =
+  'inline-flex items-center justify-center rounded-md font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60'
 
-const variants = {
-  primary: 'bg-primary-700 text-white hover:bg-primary-800',
-  secondary: 'bg-white text-primary-800 border border-primary-700 hover:bg-primary-50',
-  danger: 'bg-red-500 text-white hover:bg-red-600'
+const variantClasses: Record<ButtonVariant, string> = {
+  primary: 'bg-primary-700 text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300',
+  secondary: 'bg-white text-primary-900 border border-primary-300 hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300',
+  danger: 'bg-red-500 text-white hover:bg-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300'
 }
 
-const sizes = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2',
-  lg: 'px-5 py-3 text-base'
+const sizeClasses: Record<ButtonSize, string> = {
+  sm: 'h-9 px-3 text-sm',
+  md: 'h-10 px-4',
+  lg: 'h-11 px-5 text-base'
 }
 
-export function PrimaryButton({
+export function Button({
   variant = 'primary',
   size = 'md',
-  className,
+  className = '',
   ...props
 }: ButtonProps) {
-  const classNames = [base, variants[variant], sizes[size], className].filter(Boolean).join(' ')
-
+  const classNames = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`.trim()
   return <button {...props} className={classNames} />
+}
+
+export function PrimaryButton(props: ButtonProps) {
+  return <Button {...props} />
 }

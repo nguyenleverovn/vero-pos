@@ -3,17 +3,32 @@
 @tailwind utilities;
 
 :root {
-  --space-unit: 4px;
-  --spacing-0: 0;
-  --spacing-1: calc(var(--space-unit) * 1);
-  --spacing-2: calc(var(--space-unit) * 2);
-  --spacing-3: calc(var(--space-unit) * 3);
-  --spacing-4: calc(var(--space-unit) * 4);
-  --spacing-5: calc(var(--space-unit) * 5);
-  --spacing-6: calc(var(--space-unit) * 6);
+  --color-primary: #2d6ce5;
+  --color-primary-ink: #0f2d63;
+  --color-secondary: #1f57c7;
+  --color-background: #f3f6ff;
+  --color-surface: #f8f9fc;
+  --color-text: #0f1d3a;
+  --color-text-muted: #51608d;
+  --color-border: #d3ddff;
+  --color-success: #1fa34d;
+  --color-warning: #f5a524;
 
-  --font-heading: 'Inter', 'Segoe UI', Roboto, sans-serif;
-  --font-body: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --space-unit: 4px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --radius-small: 0.5rem;
+  --radius-medium: 0.875rem;
+  --radius-large: 1.25rem;
+
+  --font-heading: 'Trebuchet MS', 'Segoe UI', 'Arial', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', 'Arial', sans-serif;
 }
 
 * {
@@ -22,18 +37,27 @@
 
 body {
   margin: 0;
-  background: #f0f4ff;
-  color: #0b2040;
+  background: var(--color-background);
+  color: var(--color-text);
   font-family: var(--font-body);
+  min-height: 100vh;
 }
 
 .app-shell {
   min-height: 100vh;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  background: radial-gradient(circle at 0% 0%, #edf2ff 0%, #f5f8ff 35%, #f8f9ff 100%);
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at 0% 0%, #ecf1ff 0%, #f3f6ff 38%, #f8f9ff 100%);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-foreground {
+  color: var(--color-text);
 }
 
 .hero-soft {
-  @apply rounded-xl bg-white/80 backdrop-blur shadow-card border border-border;
+  @apply rounded-xl bg-white/85 backdrop-blur shadow-card border border-border;
 }
