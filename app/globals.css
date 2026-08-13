@@ -325,7 +325,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .vp-cart-desktop h2 { margin: 0 0 12px; font-size: 18px; }
   .vp-cart-desktop .vp-cart-list { max-height: min(52dvh, 520px); overflow-y: auto; margin-bottom: 16px; }
   .vp-action-panel { position: static; width: auto; transform: none; padding: 20px 0 0; background: transparent; }
-  .vp-payment-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .vp-payment-layout { max-width: 640px; margin: 0 auto; }
   .vp-payment-summary { margin: 0; border: 1px solid var(--vp-border); border-radius: 16px; }
   .vp-keypad { padding: 0; }
   .vp-fab { right: 24px; bottom: 24px; }
