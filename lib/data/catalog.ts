@@ -12,7 +12,7 @@ export type Product = {
 export type Category = { id: CategoryId; label: string };
 export type PosCatalog = {
   generatedAt: string;
-  source: "local-fixture-v1" | "local-setup-v1";
+  source: "local-fixture-v1" | "indexeddb-v1";
   categories: Category[];
   products: Product[];
 };

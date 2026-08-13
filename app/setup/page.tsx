@@ -4,17 +4,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {
-  completeProductSetup,
   createMockCategory,
   createMockProduct,
   getCategoryLabel,
-  loadProductSetup,
   PRODUCT_CATEGORIES,
   ProductCategory,
   ProductCategoryId,
-  saveProductSetup,
   SetupProduct
 } from "@/lib/onboarding/productSetup";
+import {
+  completeProductSetup,
+  loadProductSetup,
+  saveProductSetup
+} from "@/lib/repositories/productSetupRepository";
 
 export default function ProductSetupPage() {
   const router = useRouter();
@@ -33,18 +35,22 @@ export default function ProductSetupPage() {
   const canAddCategory = categoryName.trim().length > 0 && !categories.some((category) => category.label.toLocaleLowerCase("vi") === categoryName.trim().toLocaleLowerCase("vi"));
 
   useEffect(() => {
-    const setup = loadProductSetup();
-    setCategories(setup.categories);
-    setProducts(setup.products);
-    setCompleted(setup.completed);
-    setCategoryId(setup.categories[0]?.id ?? "coffee");
+    let cancelled = false;
+    loadProductSetup().then((setup) => {
+      if (cancelled) return;
+      setCategories(setup.categories);
+      setProducts(setup.products);
+      setCompleted(setup.completed);
+      setCategoryId(setup.categories[0]?.id ?? "coffee");
+    });
+    return () => { cancelled = true; };
   }, []);
 
   function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
     setImageName(event.target.files?.[0]?.name ?? "");
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canSave) return;
 
@@ -56,13 +62,13 @@ export default function ProductSetupPage() {
 
     const nextProducts = [...products, product];
     setProducts(nextProducts);
-    saveProductSetup({ categories, products: nextProducts, completed });
+    await saveProductSetup({ categories, products: nextProducts, completed });
     setName("");
     setPrice("");
     setImageName("");
   }
 
-  function handleAddCategory() {
+  async function handleAddCategory() {
     if (!canAddCategory) return;
 
     const category = createMockCategory(categoryName.trim(), categories.length + 1);
@@ -70,11 +76,11 @@ export default function ProductSetupPage() {
     setCategories(nextCategories);
     setCategoryId(category.id);
     setCategoryName("");
-    saveProductSetup({ categories: nextCategories, products, completed });
+    await saveProductSetup({ categories: nextCategories, products, completed });
   }
 
-  function handleStartSelling() {
-    completeProductSetup(categories, products);
+  async function handleStartSelling() {
+    await completeProductSetup(categories, products);
     router.push("/");
   }
 

@@ -1,16 +1,15 @@
 import { PosCatalog, getCatalog } from "@/lib/data/catalog";
-import { loadProductSetup } from "@/lib/onboarding/productSetup";
+import { loadProductSetup } from "@/lib/repositories/productSetupRepository";
 
 export async function loadCatalog(): Promise<PosCatalog> {
-  // Migration point: replace this with IndexedDB/API fetch without changing UI contract.
   if (typeof window === "undefined") return getCatalog();
 
-  const setup = loadProductSetup();
+  const setup = await loadProductSetup();
   if (!setup.completed) return getCatalog();
 
   return {
     generatedAt: new Date().toISOString(),
-    source: "local-setup-v1",
+    source: "indexeddb-v1",
     categories: setup.categories,
     products: setup.products.map((product) => ({
       id: product.id,

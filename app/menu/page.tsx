@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PosCatalog } from "@/lib/data/catalog";
-import { updateSetupProductActive } from "@/lib/onboarding/productSetup";
 import { loadCatalog } from "@/lib/repositories/catalogRepository";
+import { updateSetupProductActive } from "@/lib/repositories/productSetupRepository";
 
 export default function MenuPage() {
   const [catalog, setCatalog] = useState<PosCatalog | null>(null);
@@ -20,12 +20,10 @@ export default function MenuPage() {
     });
   }, []);
 
-  function toggleProduct(productId: string) {
-    setEnabled((current) => {
-      const active = !current[productId];
-      updateSetupProductActive(productId, active);
-      return { ...current, [productId]: active };
-    });
+  async function toggleProduct(productId: string) {
+    const active = !enabled[productId];
+    setEnabled((current) => ({ ...current, [productId]: active }));
+    await updateSetupProductActive(productId, active);
   }
 
   return (
