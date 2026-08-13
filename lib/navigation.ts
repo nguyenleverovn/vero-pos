@@ -12,7 +12,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "pos", href: "/", label: "Bán hàng", icon: "/icons/cart.svg?v=2" },
   { key: "receipts", href: "/receipts", label: "Hóa đơn", icon: "/icons/receipt.svg?v=2" },
   { key: "menu", href: "/menu", label: "Menu", icon: "/icons/coffee.svg?v=2" },
-  { key: "reports", href: "/reports", label: "Doanh thu", icon: "/icons/chart.svg?v=2" }
+  { key: "reports", href: "/reports", label: "Tổng kết", icon: "/icons/chart.svg?v=2" }
 ];
 
 const ONBOARDING_PATHS = ["/welcome"];

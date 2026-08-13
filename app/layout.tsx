@@ -6,9 +6,19 @@ import { Sidebar } from "@/components/Sidebar";
 import { OnboardingGate } from "@/components/OnboardingGate";
 
 export const metadata: Metadata = {
+  applicationName: "VERO POS",
   title: "VERO POS - Chạm là chạy",
   description: "Ứng dụng bán hàng dành cho quán cà phê",
-  manifest: "/manifest.json"
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "VERO POS"
+  },
+  icons: {
+    icon: "/icons/icon-192.svg",
+    apple: "/icons/icon-192.svg"
+  }
 };
 
 export const viewport: Viewport = {
