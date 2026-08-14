@@ -6,12 +6,14 @@ import { useEffect, useState } from "react";
 import { CartItem, clearCart, getCartTotal, loadCart } from "@/lib/cart/cart";
 import { loadCatalog } from "@/lib/repositories/catalogRepository";
 import { PaymentMethod, saveOrder } from "@/lib/repositories/orderRepository";
+import { loadPaymentQrCode } from "@/lib/repositories/qrCodeRepository";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const [items, setItems] = useState<CartItem[]>([]);
   const [method, setMethod] = useState<PaymentMethod>("cash");
   const [isCompleting, setIsCompleting] = useState(false);
+  const [qrCode, setQrCode] = useState("");
   const due = getCartTotal(items);
   const canComplete = due > 0 && !isCompleting;
 
@@ -20,6 +22,10 @@ export default function CheckoutPage() {
       const savedItems = loadCart(catalog.products);
       setItems(savedItems);
     });
+  }, []);
+
+  useEffect(() => {
+    loadPaymentQrCode().then(setQrCode);
   }, []);
 
   const completeCheckout = async () => {
@@ -49,9 +55,14 @@ export default function CheckoutPage() {
             <button className={`vp-method ${method === "cash" ? "is-active" : ""}`} onClick={() => setMethod("cash")}>Tiền mặt</button>
             <button className={`vp-method ${method === "transfer" ? "is-active" : ""}`} onClick={() => setMethod("transfer")}>Chuyển khoản (QR)</button>
           </div>
+          {method === "transfer" && (
+            <div className="vp-checkout-qr">
+              {qrCode ? <img src={qrCode} alt="QR chuyển khoản" /> : <p>Chưa có QR chuyển khoản. Thêm QR tại trang Hóa đơn.</p>}
+            </div>
+          )}
         </section>
       </div>
-      <div className="vp-action-panel"><button className="vp-primary-button" type="button" disabled={!canComplete} onClick={completeCheckout}>{isCompleting ? "ĐANG LƯU ĐƠN..." : "HOÀN TẤT & IN BILL (1 chạm)"}</button></div>
+      <div className="vp-action-panel"><button className="vp-primary-button" type="button" disabled={!canComplete} onClick={completeCheckout}>{isCompleting ? "ĐANG LƯU ĐƠN..." : "HOÀN TẤT & IN BILL"}</button></div>
     </main>
   );
 }

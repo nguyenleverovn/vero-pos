@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   createMockCategory,
   createMockProduct,
@@ -24,11 +24,11 @@ export default function ProductSetupPage() {
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState<ProductCategoryId>("coffee");
   const [categoryName, setCategoryName] = useState("");
-  const [imageName, setImageName] = useState("");
   const [active, setActive] = useState(true);
   const [categories, setCategories] = useState<ProductCategory[]>(PRODUCT_CATEGORIES);
   const [products, setProducts] = useState<SetupProduct[]>([]);
   const [completed, setCompleted] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const priceVnd = Number(price);
   const canSave = name.trim().length > 0 && Number.isFinite(priceVnd) && priceVnd > 0;
@@ -42,30 +42,40 @@ export default function ProductSetupPage() {
       setProducts(setup.products);
       setCompleted(setup.completed);
       setCategoryId(setup.categories[0]?.id ?? "coffee");
+      const requestedId = new URLSearchParams(window.location.search).get("edit");
+      const requestedProduct = setup.products.find((product) => product.id === requestedId);
+      if (requestedProduct) {
+        setEditingId(requestedProduct.id);
+        setName(requestedProduct.name);
+        setPrice(String(requestedProduct.priceVnd));
+        setCategoryId(requestedProduct.categoryId);
+        setActive(requestedProduct.active);
+      }
     });
     return () => { cancelled = true; };
   }, []);
-
-  function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
-    setImageName(event.target.files?.[0]?.name ?? "");
-  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canSave) return;
 
-    const product = createMockProduct(
-      { name: name.trim(), priceVnd, categoryId },
-      products.length + 1,
-      active
-    );
+    const product = editingId
+      ? { ...products.find((item) => item.id === editingId)!, name: name.trim(), priceVnd, categoryId, active }
+      : createMockProduct(
+        { name: name.trim(), priceVnd, categoryId },
+        Date.now(),
+        active
+      );
 
-    const nextProducts = [...products, product];
+    const nextProducts = editingId
+      ? products.map((item) => item.id === editingId ? product : item)
+      : [...products, product];
     setProducts(nextProducts);
     await saveProductSetup({ categories, products: nextProducts, completed });
+    setEditingId(null);
     setName("");
     setPrice("");
-    setImageName("");
+    router.replace("/setup");
   }
 
   async function handleAddCategory() {
@@ -84,23 +94,36 @@ export default function ProductSetupPage() {
     router.push("/");
   }
 
+  async function moveCategory(index: number, direction: -1 | 1) {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= categories.length) return;
+
+    const nextCategories = [...categories];
+    const [category] = nextCategories.splice(index, 1);
+    nextCategories.splice(targetIndex, 0, category);
+    setCategories(nextCategories);
+    await saveProductSetup({ categories: nextCategories, products, completed });
+  }
+
+  function cancelEditing() {
+    setEditingId(null);
+    setName("");
+    setPrice("");
+    setActive(true);
+    setCategoryId(categories[0]?.id ?? "coffee");
+    router.replace("/setup");
+  }
+
   return (
     <main className="vp-setup">
       <header className="vp-setup-header">
         <Link className="vp-setup-back" href={completed ? "/menu" : "/welcome"} aria-label="Quay lại">
           <img src="/icons/chevron-left.svg" alt="" />
         </Link>
-        <h1>Thêm món mới</h1>
+        <h1>{editingId ? "Chỉnh sửa món" : "Thêm món mới"}</h1>
       </header>
 
       <form className="vp-setup-form" onSubmit={handleSubmit}>
-        <label className="vp-image-upload">
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-          <span className="vp-image-upload-icon" aria-hidden="true"><span /></span>
-          <strong>{imageName || "Tải ảnh lên"}</strong>
-          <small>Hỗ trợ tệp PNG, JPG dung lượng tối đa 5MB</small>
-        </label>
-
         <label className="vp-setup-field">
           <span>Tên món <b>*</b></span>
           <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ví dụ: Cà phê Muối" autoComplete="off" />
@@ -122,7 +145,7 @@ export default function ProductSetupPage() {
           <button className={`vp-switch ${active ? "is-on" : ""}`} type="button" onClick={() => setActive((current) => !current)} aria-label={active ? "Tắt trạng thái hoạt động" : "Bật trạng thái hoạt động"} />
         </div>
 
-        <label className="vp-setup-field">
+        <label className="vp-setup-field vp-setup-field--category">
           <span>Danh mục <b>*</b></span>
           <select value={categoryId} onChange={(event) => setCategoryId(event.target.value as ProductCategoryId)}>
             {categories.map((category) => (
@@ -134,6 +157,21 @@ export default function ProductSetupPage() {
             <button type="button" onClick={handleAddCategory} disabled={!canAddCategory}>Thêm</button>
           </div>
         </label>
+
+        <section className="vp-category-order" aria-label="Sắp xếp danh mục">
+          <div><strong>Sắp xếp Danh mục</strong><span>Thứ tự này sẽ hiển thị trên thanh danh mục bán hàng.</span></div>
+          <ul>
+            {categories.map((category, index) => (
+              <li key={category.id}>
+                <span>{category.label}</span>
+                <div>
+                  <button type="button" onClick={() => moveCategory(index, -1)} disabled={index === 0} aria-label={`Đưa ${category.label} sang trái`}>←</button>
+                  <button type="button" onClick={() => moveCategory(index, 1)} disabled={index === categories.length - 1} aria-label={`Đưa ${category.label} sang phải`}>→</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         {products.length > 0 && (
           <section className="vp-setup-saved" aria-live="polite">
@@ -156,8 +194,8 @@ export default function ProductSetupPage() {
         )}
 
         <div className="vp-setup-actions">
-          <button className="vp-primary-button vp-save-product" type="submit" disabled={!canSave}>Lưu món mới (1 chạm)</button>
-          {products.length > 0 && <button className="vp-start-selling" type="button" onClick={handleStartSelling}>Bắt đầu bán hàng</button>}
+          <button className="vp-primary-button vp-save-product" type="submit" disabled={!canSave}>{editingId ? "Lưu thay đổi" : "Lưu món mới"}</button>
+          {editingId ? <button className="vp-start-selling" type="button" onClick={cancelEditing}>Hủy chỉnh sửa</button> : products.length > 0 && <button className="vp-start-selling" type="button" onClick={handleStartSelling}>Bắt đầu bán hàng</button>}
         </div>
       </form>
     </main>

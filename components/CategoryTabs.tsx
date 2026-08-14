@@ -1,14 +1,25 @@
 import { Category } from "@/lib/data/catalog";
 
+export type CategoryFilter = Category["id"] | "all";
+
 type CategoryTabsProps = {
-  activeCategory: Category["id"];
+  activeCategory: CategoryFilter;
   items: Category[];
-  onChange: (category: Category["id"]) => void;
+  onChange: (category: CategoryFilter) => void;
 };
 
 export function CategoryTabs({ activeCategory, items, onChange }: CategoryTabsProps) {
   return (
     <div className="vp-category-tabs" role="tablist" aria-label="Danh mục sản phẩm">
+      <button
+        type="button"
+        className={`vp-category-tab ${activeCategory === "all" ? "is-active" : ""}`}
+        onClick={() => onChange("all")}
+        role="tab"
+        aria-selected={activeCategory === "all"}
+      >
+        Tất cả món
+      </button>
       {items.map((item) => {
         const active = item.id === activeCategory;
 

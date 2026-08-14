@@ -17,11 +17,18 @@ export type OrderLine = {
 
 export type PosOrder = {
   id: string;
+  orderNumber: number;
   createdAt: string;
   paymentMethod: PaymentMethod;
   items: OrderLine[];
   totalVnd: number;
 };
+
+type StoredPosOrder = Omit<PosOrder, "orderNumber"> & { orderNumber?: number };
+
+export function formatOrderCode(orderNumber: number) {
+  return `order${String(orderNumber).padStart(2, "0")}`;
+}
 
 function createOrderId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -31,8 +38,17 @@ function createOrderId() {
 }
 
 export async function saveOrder(items: CartItem[], paymentMethod: PaymentMethod): Promise<PosOrder> {
+  const database = await openVeroPosDatabase();
+  const transaction = database.transaction(STORES.orders, "readwrite");
+  const store = transaction.objectStore(STORES.orders);
+  const existingOrders = await requestToPromise(store.getAll()) as StoredPosOrder[];
+  const orderNumber = Math.max(
+    existingOrders.length,
+    ...existingOrders.map((order) => order.orderNumber ?? 0)
+  ) + 1;
   const order: PosOrder = {
     id: createOrderId(),
+    orderNumber,
     createdAt: new Date().toISOString(),
     paymentMethod,
     items: items.map((item) => ({
@@ -44,9 +60,7 @@ export async function saveOrder(items: CartItem[], paymentMethod: PaymentMethod)
     totalVnd: getCartTotal(items)
   };
 
-  const database = await openVeroPosDatabase();
-  const transaction = database.transaction(STORES.orders, "readwrite");
-  await requestToPromise(transaction.objectStore(STORES.orders).put(order));
+  await requestToPromise(store.put(order));
   await transactionToPromise(transaction);
   return order;
 }
@@ -56,7 +70,14 @@ export async function loadOrders(): Promise<PosOrder[]> {
 
   const database = await openVeroPosDatabase();
   const transaction = database.transaction(STORES.orders, "readonly");
-  const orders = await requestToPromise(transaction.objectStore(STORES.orders).getAll()) as PosOrder[];
+  const storedOrders = await requestToPromise(transaction.objectStore(STORES.orders).getAll()) as StoredPosOrder[];
   await transactionToPromise(transaction);
-  return orders.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+  return storedOrders
+    .sort((left, right) => left.createdAt.localeCompare(right.createdAt))
+    .map((order, index) => ({ ...order, orderNumber: order.orderNumber ?? index + 1 }))
+    .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+}
+
+export async function loadOrder(orderId: string): Promise<PosOrder | undefined> {
+  return (await loadOrders()).find((order) => order.id === orderId);
 }
