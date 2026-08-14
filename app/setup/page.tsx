@@ -94,17 +94,6 @@ export default function ProductSetupPage() {
     router.push("/");
   }
 
-  async function moveCategory(index: number, direction: -1 | 1) {
-    const targetIndex = index + direction;
-    if (targetIndex < 0 || targetIndex >= categories.length) return;
-
-    const nextCategories = [...categories];
-    const [category] = nextCategories.splice(index, 1);
-    nextCategories.splice(targetIndex, 0, category);
-    setCategories(nextCategories);
-    await saveProductSetup({ categories: nextCategories, products, completed });
-  }
-
   function cancelEditing() {
     setEditingId(null);
     setName("");
@@ -157,21 +146,6 @@ export default function ProductSetupPage() {
             <button type="button" onClick={handleAddCategory} disabled={!canAddCategory}>Thêm</button>
           </div>
         </label>
-
-        <section className="vp-category-order" aria-label="Sắp xếp danh mục">
-          <div><strong>Sắp xếp Danh mục</strong><span>Thứ tự này sẽ hiển thị trên thanh danh mục bán hàng.</span></div>
-          <ul>
-            {categories.map((category, index) => (
-              <li key={category.id}>
-                <span>{category.label}</span>
-                <div>
-                  <button type="button" onClick={() => moveCategory(index, -1)} disabled={index === 0} aria-label={`Đưa ${category.label} sang trái`}>←</button>
-                  <button type="button" onClick={() => moveCategory(index, 1)} disabled={index === categories.length - 1} aria-label={`Đưa ${category.label} sang phải`}>→</button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
 
         {products.length > 0 && (
           <section className="vp-setup-saved" aria-live="polite">

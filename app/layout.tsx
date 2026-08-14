@@ -16,8 +16,8 @@ export const metadata: Metadata = {
     title: "VERO POS"
   },
   icons: {
-    icon: "/icons/icon-192.svg",
-    apple: "/icons/icon-192.svg"
+    icon: "/icons/vero-pos-icon.png",
+    apple: "/icons/vero-pos-icon.png"
   }
 };
 
