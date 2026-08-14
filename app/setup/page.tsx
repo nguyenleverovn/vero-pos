@@ -106,21 +106,23 @@ export default function ProductSetupPage() {
 
         <div className="vp-setup-status">
           <div><strong>Trạng thái hoạt động</strong><span>Cho phép bán ngay sau khi tạo</span></div>
-          <button className={`vp-switch ${active ? "is-on" : ""}`} type="button" onClick={() => setActive((current) => !current)} aria-label={active ? "Tắt trạng thái hoạt động" : "Bậ[...]
+          <button className={`vp-switch ${active ? "is-on" : ""}`} type="button" onClick={() => setActive((current) => !current)} aria-label={active ? "Tắt trạng thái hoạt động" : "Bật trạng thái hoạt động"} />
         </div>
 
-        <label className="vp-setup-field">
-          <span>Danh mục <b>*</b></span>
-          <select value={categoryId} onChange={(event) => setCategoryId(event.target.value as ProductCategoryId)}>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>{category.label}</option>
-            ))}
-          </select>
+        <div className="vp-category-section">
+          <label className="vp-setup-field">
+            <span>Danh mục <b>*</b></span>
+            <select value={categoryId} onChange={(event) => setCategoryId(event.target.value as ProductCategoryId)}>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>{category.label}</option>
+              ))}
+            </select>
+          </label>
           <div className="vp-category-create">
             <input value={categoryName} onChange={(event) => setCategoryName(event.target.value)} placeholder="Tên danh mục mới" autoComplete="off" />
             <button type="button" onClick={handleAddCategory} disabled={!canAddCategory}>Thêm</button>
           </div>
-        </label>
+        </div>
 
         {products.length > 0 && (
           <section className="vp-setup-saved" aria-live="polite">
@@ -147,6 +149,37 @@ export default function ProductSetupPage() {
           {products.length > 0 && <button className="vp-start-selling" type="button" onClick={handleStartSelling}>Bắt đầu bán hàng</button>}
         </div>
       </form>
+
+      <style jsx>{`
+        .vp-category-section {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          align-items: center;
+          text-align: center;
+          margin: 1.5rem 0;
+        }
+
+        .vp-category-section .vp-setup-field {
+          width: 100%;
+        }
+
+        .vp-category-section select {
+          text-align: center;
+        }
+
+        .vp-category-create {
+          display: flex;
+          gap: 0.5rem;
+          width: 100%;
+          justify-content: center;
+        }
+
+        .vp-category-create input {
+          flex: 1;
+          max-width: 200px;
+        }
+      `}</style>
     </main>
   );
 }
