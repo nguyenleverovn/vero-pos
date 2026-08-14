@@ -78,7 +78,7 @@
   .vp-setup-status { order: 4; min-height: 66px; border-radius: 10px; }
   .vp-setup-field--note { order: 5; }
   .vp-setup-saved { order: 6; }
-  .vp-setup-actions { left: 184px; bottom: 0; width: calc(100% - 184px); grid-template-columns: 1fr 1fr; transform: none; padding: 16px 24px 24px; }
+  .vp-setup-actions { order: 7; left: 184px; bottom: 0; width: calc(100% - 184px); grid-column: 1 / -1; grid-template-columns: 1fr 1fr; transform: none; padding: 16px 24px 24px; }
   .vp-save-product { min-height: 51px; }
 }
 
@@ -148,5 +148,7 @@
   .vp-chart-card,
   .vp-ranking { min-height: 400px; }
   .vp-setup { max-width: 820px; }
-  .vp-setup-actions { left: 240px; width: calc(100% - 240px); }
+  .vp-setup-actions { left: auto; width: 100%; grid-column: 1 / -1; grid-template-columns: 1fr 1fr; margin: 4px 0 0; padding: 28px 0; border-radius: 0; }
+  .vp-setup-actions .vp-save-product:only-child { grid-column: 1 / -1; }
+  .vp-save-product { min-height: 61px; }
 }
