@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   createMockCategory,
   createMockProduct,
@@ -24,7 +24,6 @@ export default function ProductSetupPage() {
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState<ProductCategoryId>("coffee");
   const [categoryName, setCategoryName] = useState("");
-  const [imageName, setImageName] = useState("");
   const [active, setActive] = useState(true);
   const [categories, setCategories] = useState<ProductCategory[]>(PRODUCT_CATEGORIES);
   const [products, setProducts] = useState<SetupProduct[]>([]);
@@ -46,10 +45,6 @@ export default function ProductSetupPage() {
     return () => { cancelled = true; };
   }, []);
 
-  function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
-    setImageName(event.target.files?.[0]?.name ?? "");
-  }
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canSave) return;
@@ -65,7 +60,6 @@ export default function ProductSetupPage() {
     await saveProductSetup({ categories, products: nextProducts, completed });
     setName("");
     setPrice("");
-    setImageName("");
   }
 
   async function handleAddCategory() {
@@ -94,13 +88,6 @@ export default function ProductSetupPage() {
       </header>
 
       <form className="vp-setup-form" onSubmit={handleSubmit}>
-        <label className="vp-image-upload">
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-          <span className="vp-image-upload-icon" aria-hidden="true"><span /></span>
-          <strong>{imageName || "Tải ảnh lên"}</strong>
-          <small>Hỗ trợ tệp PNG, JPG dung lượng tối đa 5MB</small>
-        </label>
-
         <label className="vp-setup-field">
           <span>Tên món <b>*</b></span>
           <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ví dụ: Cà phê Muối" autoComplete="off" />
@@ -119,7 +106,7 @@ export default function ProductSetupPage() {
 
         <div className="vp-setup-status">
           <div><strong>Trạng thái hoạt động</strong><span>Cho phép bán ngay sau khi tạo</span></div>
-          <button className={`vp-switch ${active ? "is-on" : ""}`} type="button" onClick={() => setActive((current) => !current)} aria-label={active ? "Tắt trạng thái hoạt động" : "Bật trạng thái hoạt động"} />
+          <button className={`vp-switch ${active ? "is-on" : ""}`} type="button" onClick={() => setActive((current) => !current)} aria-label={active ? "Tắt trạng thái hoạt động" : "Bậ[...]
         </div>
 
         <label className="vp-setup-field">
