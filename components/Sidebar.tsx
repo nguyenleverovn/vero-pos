@@ -11,8 +11,7 @@ export function Sidebar() {
   return (
     <aside className="vp-sidebar">
       <div className="vp-sidebar-brand">
-        <img src="/icons/vero-pos-logo.png" alt="" />
-        <div><strong>VERO SOL</strong><span>Khai thông bế tắc</span></div>
+        <img src="/icons/vero-pos-brand-lockup.png" alt="VERO POS - CHẠM LÀ CHẠY" />
       </div>
       <nav className="vp-sidebar-nav" aria-label="Điều hướng desktop">
         {NAV_ITEMS.map((item) => {

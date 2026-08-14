@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CategoryId, PosCatalog, Product } from "@/lib/data/catalog";
-import { CategoryTabs } from "@/components/CategoryTabs";
+import { PosCatalog, Product } from "@/lib/data/catalog";
+import { CategoryFilter, CategoryTabs } from "@/components/CategoryTabs";
 import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
 import { Cart } from "@/components/Cart";
@@ -19,7 +19,7 @@ import { loadCatalog } from "@/lib/repositories/catalogRepository";
 
 export default function VeroPosPage() {
   const [catalog, setCatalog] = useState<PosCatalog | null>(null);
-  const [activeCategory, setActiveCategory] = useState<CategoryId>("coffee");
+  const [activeCategory, setActiveCategory] = useState<CategoryFilter>("all");
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function VeroPosPage() {
   if (!catalog) return <main className="vp-screen"><Header /></main>;
 
   const visibleProducts = catalog.products.filter((product) =>
-    product.active && product.category === activeCategory);
+    product.active && (activeCategory === "all" || product.category === activeCategory));
 
   const addToCart = (product: Product) => setItems((current) => addProduct(current, product));
   const updateCartItem = (next: CartItem) => setItems((current) =>

@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { loadOrders, PosOrder } from "@/lib/repositories/orderRepository";
+import { formatOrderCode, loadOrders, PosOrder } from "@/lib/repositories/orderRepository";
 
 export default function ReceiptsPage() {
   const [orders, setOrders] = useState<PosOrder[]>([]);
@@ -30,10 +31,10 @@ export default function ReceiptsPage() {
       </section>
       <section className="vp-receipt-list">
         {orders.map((order) => (
-          <article className="vp-receipt-card" key={order.id}>
-            <div className="vp-receipt-top"><strong>#{order.id.slice(0, 8)}</strong><span className="vp-receipt-time">{new Date(order.createdAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}</span><strong>{order.totalVnd.toLocaleString("vi-VN")} đ</strong></div>
+          <Link className="vp-receipt-card" href={`/receipts/${encodeURIComponent(order.id)}`} key={order.id}>
+            <div className="vp-receipt-top"><strong>{formatOrderCode(order.orderNumber)}</strong><span className="vp-receipt-time">{new Date(order.createdAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}</span><strong>{order.totalVnd.toLocaleString("vi-VN")} đ</strong></div>
             <div className="vp-receipt-bottom"><span>{order.items.reduce((sum, item) => sum + item.quantity, 0)} món</span><span className={`vp-payment-badge ${order.paymentMethod === "transfer" ? "vp-payment-badge--transfer" : ""}`}>{order.paymentMethod === "transfer" ? "Chuyển khoản" : "Tiền mặt"}</span></div>
-          </article>
+          </Link>
         ))}
         {loaded && orders.length === 0 && <div className="vp-menu-empty">Chưa có hóa đơn nào.</div>}
       </section>

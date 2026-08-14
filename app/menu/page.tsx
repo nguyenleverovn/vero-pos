@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PosCatalog } from "@/lib/data/catalog";
 import { loadCatalog } from "@/lib/repositories/catalogRepository";
-import { updateSetupProductActive } from "@/lib/repositories/productSetupRepository";
+import { deleteSetupProduct, updateSetupProductActive } from "@/lib/repositories/productSetupRepository";
 
 export default function MenuPage() {
   const [catalog, setCatalog] = useState<PosCatalog | null>(null);
@@ -26,6 +26,20 @@ export default function MenuPage() {
     await updateSetupProductActive(productId, active);
   }
 
+  async function removeProduct(productId: string, productName: string) {
+    if (!window.confirm(`Xóa món “${productName}”?`)) return;
+    await deleteSetupProduct(productId);
+    setCatalog((current) => current ? {
+      ...current,
+      products: current.products.filter((product) => product.id !== productId)
+    } : current);
+    setEnabled((current) => {
+      const next = { ...current };
+      delete next[productId];
+      return next;
+    });
+  }
+
   return (
     <main className="vp-screen vp-screen--plain">
       <header className="vp-screen-heading"><h1>Quản lý Thực đơn</h1></header>
@@ -34,7 +48,11 @@ export default function MenuPage() {
         {visible.length > 0 ? visible.map((product) => (
           <article className={`vp-menu-item ${enabled[product.id] ? "" : "is-disabled"}`} key={product.id}>
             <div className="vp-menu-copy"><strong>{product.name}</strong><span>{product.priceVnd.toLocaleString("vi-VN")}đ&nbsp; • &nbsp;{catalog?.categories.find((item) => item.id === product.category)?.label}</span></div>
-            <button className={`vp-switch ${enabled[product.id] ? "is-on" : ""}`} onClick={() => toggleProduct(product.id)} aria-label={`${enabled[product.id] ? "Tắt" : "Bật"} ${product.name}`} />
+            <div className="vp-menu-actions">
+              <Link className="vp-menu-edit" href={`/setup?edit=${encodeURIComponent(product.id)}`}>Sửa</Link>
+              <button className="vp-menu-delete" type="button" onClick={() => removeProduct(product.id, product.name)}>Xóa</button>
+              <button className={`vp-switch ${enabled[product.id] ? "is-on" : ""}`} type="button" onClick={() => toggleProduct(product.id)} aria-label={`${enabled[product.id] ? "Tắt" : "Bật"} ${product.name}`} />
+            </div>
           </article>
         )) : <div className="vp-menu-empty">Chưa có món phù hợp.</div>}
       </section>
