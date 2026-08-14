@@ -275,9 +275,22 @@ button, a { -webkit-tap-highlight-color: transparent; }
   background: var(--vp-background);
 }
 .vp-welcome-content { position: relative; z-index: 1; width: min(100%, 430px); display: grid; justify-items: center; text-align: center; }
-.vp-welcome-logo { display: block; width: min(414px, 100%); height: 124px; object-fit: contain; }
+.vp-welcome-logo { display: block; width: 100%; height: auto; object-fit: contain; }
 .vp-welcome-slogan { width: 100%; margin: 10px 0 0; padding: 8px 0; border-top: 1px solid #47413d; border-bottom: 1px solid #47413d; color: #111; letter-spacing: .34em; font-size: clamp(21px, 6vw, 30px); line-height: 1.2; font-weight: 500; white-space: nowrap; }
 .vp-welcome-start { width: 100%; min-height: 132px; margin-top: 32px; border-radius: 16px; background: #c93429; font-size: clamp(34px, 9vw, 44px); text-transform: uppercase; letter-spacing: .01em; }
+.vp-welcome-hotline {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 60px;
+  margin: 0;
+  text-align: center;
+  color: #6f5e53;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  z-index: 2;
+}
 .vp-welcome-purpose { margin: 12px 0 0; color: #161310; font-size: clamp(16px, 4.5vw, 21px); line-height: 1.3; white-space: nowrap; }
 .vp-welcome-powered { position: absolute; left: 0; right: 0; bottom: max(20px, env(safe-area-inset-bottom)); margin: 0; color: #988a80; text-align: center; font-size: 11px; letter-spacing: .03em; }
 .vp-welcome-powered strong { color: var(--vp-primary); }
@@ -320,17 +333,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
   background-size: 14px;
 }
 .vp-setup-field--category { width: 100%; max-width: 460px; justify-self: center; }
-.vp-category-order { width: 100%; max-width: 460px; grid-column: 1 / -1; justify-self: center; overflow: hidden; border: 1px solid var(--vp-border); border-radius: 14px; background: white; }
-.vp-category-order > div { display: grid; gap: 3px; padding: 14px 16px; background: #f2ece4; }
-.vp-category-order > div strong { font-size: 14px; }
-.vp-category-order > div span { color: var(--vp-muted); font-size: 11px; }
-.vp-category-order ul { list-style: none; margin: 0; padding: 0 16px; }
-.vp-category-order li { min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--vp-border); }
-.vp-category-order li:last-child { border-bottom: 0; }
-.vp-category-order li > span { font-size: 13px; font-weight: 800; }
-.vp-category-order li div { display: flex; gap: 6px; }
-.vp-category-order button { width: 34px; height: 32px; border: 0; border-radius: 8px; background: #f2ece4; color: var(--vp-primary); font-weight: 900; cursor: pointer; }
-.vp-category-order button:disabled { opacity: .35; cursor: not-allowed; }
+.vp-menu-category-order { display: grid; gap: 10px; margin: 16px 0 20px; }
+.vp-menu-category-heading { display: grid; gap: 3px; }
+.vp-menu-category-heading strong { color: var(--vp-primary); font-size: 14px; }
+.vp-menu-category-heading span { color: var(--vp-muted); font-size: 11px; }
+.vp-menu-category-bar { display: flex; gap: 8px; overflow-x: auto; margin: 0 -20px; padding: 0 20px 8px; scrollbar-width: none; }
+.vp-menu-category-bar::-webkit-scrollbar { display: none; }
+.vp-menu-category-item { flex: 0 0 auto; display: grid; gap: 7px; min-width: 124px; padding: 10px 12px; border: 1px solid var(--vp-border); border-radius: 12px; background: white; }
+.vp-menu-category-item > span { color: var(--vp-text); font-size: 13px; font-weight: 800; white-space: nowrap; }
+.vp-menu-category-item > div { display: flex; gap: 6px; }
+.vp-menu-category-item button { width: 34px; height: 30px; border: 0; border-radius: 8px; background: #f2ece4; color: var(--vp-primary); font-weight: 900; cursor: pointer; }
+.vp-menu-category-item button:disabled { opacity: .35; cursor: not-allowed; }
 .vp-category-create { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
 .vp-category-create input { height: 46px; font-size: 14px; }
 .vp-category-create button { min-width: 72px; border: 0; border-radius: 10px; background: var(--vp-primary); color: white; font-weight: 800; cursor: pointer; }

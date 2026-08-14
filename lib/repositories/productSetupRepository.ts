@@ -17,6 +17,7 @@ const SETUP_SETTING_KEY = "product-setup";
 type SetupSetting = {
   key: typeof SETUP_SETTING_KEY;
   completed: boolean;
+  categoryOrder?: ProductCategory["id"][];
 };
 
 function parseLegacyState(): ProductSetupState | null {
@@ -54,9 +55,18 @@ async function readIndexedDbState(): Promise<{ state: ProductSetupState; persist
   await transactionToPromise(transaction);
 
   const initial = getInitialProductSetup();
+  const categoryOrder = new Map(
+    (setting?.categoryOrder ?? []).map((categoryId, index) => [categoryId, index])
+  );
+  const orderedCategories = categoryOrder.size > 0
+    ? [...categories].sort((left, right) =>
+      (categoryOrder.get(left.id) ?? Number.MAX_SAFE_INTEGER)
+      - (categoryOrder.get(right.id) ?? Number.MAX_SAFE_INTEGER))
+    : categories;
+
   return {
     state: {
-      categories: categories.length > 0 ? categories : initial.categories,
+      categories: orderedCategories.length > 0 ? orderedCategories : initial.categories,
       products,
       completed: setting?.completed === true
     },
@@ -90,7 +100,11 @@ export async function saveProductSetup(state: ProductSetupState): Promise<void> 
   const requests: Array<Promise<unknown>> = [
     requestToPromise(categoryStore.clear()),
     requestToPromise(productStore.clear()),
-    requestToPromise(settingStore.put({ key: SETUP_SETTING_KEY, completed: state.completed } satisfies SetupSetting))
+    requestToPromise(settingStore.put({
+      key: SETUP_SETTING_KEY,
+      completed: state.completed,
+      categoryOrder: state.categories.map((category) => category.id)
+    } satisfies SetupSetting))
   ];
 
   state.categories.forEach((category) => requests.push(requestToPromise(categoryStore.put(category))));
@@ -117,6 +131,11 @@ export async function updateSetupProductActive(productId: string, active: boolea
     ...state,
     products: state.products.map((product) => product.id === productId ? { ...product, active } : product)
   });
+}
+
+export async function updateSetupCategoryOrder(categories: ProductCategory[]): Promise<void> {
+  const state = await loadProductSetup();
+  await saveProductSetup({ ...state, categories });
 }
 
 export async function deleteSetupProduct(productId: string): Promise<void> {
