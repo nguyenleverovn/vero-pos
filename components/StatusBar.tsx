@@ -1,7 +1,7 @@
 export function StatusBar() {
   return (
     <div className="vp-status" aria-hidden="true">
-      <span>9:41</span>
+      <div className="vp-status-logo">VERO POS</div>
       <span className="vp-status-icons">
         <img src="/icons/ios-signal.svg" alt="" />
         <img src="/icons/ios-wifi.svg" alt="" />
