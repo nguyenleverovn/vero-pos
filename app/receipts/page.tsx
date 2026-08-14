@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { formatOrderCode, loadOrders, PosOrder } from "@/lib/repositories/orderRepository";
 import { clearPaymentQrCode, loadPaymentQrCode, savePaymentQrCode } from "@/lib/repositories/qrCodeRepository";
+import { WorkspaceMeta } from "@/components/WorkspaceMeta";
 
 export default function ReceiptsPage() {
   const [orders, setOrders] = useState<PosOrder[]>([]);
@@ -11,7 +12,9 @@ export default function ReceiptsPage() {
   const [qrCode, setQrCode] = useState("");
   const summary = useMemo(() => ({
     orderCount: orders.length,
-    estimatedRevenue: orders.reduce((sum, order) => sum + order.totalVnd, 0)
+    estimatedRevenue: orders.reduce((sum, order) => sum + order.totalVnd, 0),
+    cashCount: orders.filter((order) => order.paymentMethod === "cash").length,
+    transferCount: orders.filter((order) => order.paymentMethod === "transfer").length
   }), [orders]);
 
   useEffect(() => {
@@ -49,10 +52,13 @@ export default function ReceiptsPage() {
 
   return (
     <main className="vp-screen vp-screen--plain">
-      <header className="vp-screen-heading"><h1>Nhật ký Hóa đơn</h1><span className="vp-date-link">Hôm nay</span></header>
+      <header className="vp-screen-heading"><h1>Nhật ký Hóa đơn</h1><WorkspaceMeta /></header>
+      <div className="vp-receipt-filters"><button className="is-active" type="button">Hôm nay</button><button type="button">Hôm qua</button><button type="button">Tuần này</button></div>
       <section className="vp-stat-row">
         <div className="vp-stat"><span>Tổng đơn hôm nay</span><strong>{summary.orderCount} đơn</strong></div>
         <div className="vp-stat vp-stat--red"><span>Doanh thu ước tính</span><strong>{summary.estimatedRevenue.toLocaleString("vi-VN")}đ</strong></div>
+        <div className="vp-stat vp-stat--cash"><span>Bằng Tiền mặt</span><strong>{summary.cashCount} đơn</strong></div>
+        <div className="vp-stat vp-stat--transfer"><span>Bằng Chuyển khoản</span><strong>{summary.transferCount} đơn</strong></div>
       </section>
       <section className="vp-qr-settings">
         <div className="vp-qr-settings-copy"><strong>QR chuyển khoản</strong><span>QR này sẽ hiện khi chọn thanh toán chuyển khoản.</span></div>
@@ -62,11 +68,13 @@ export default function ReceiptsPage() {
           {qrCode && <button type="button" onClick={removeQrCode}>Xóa QR</button>}
         </div>
       </section>
+      <div className="vp-receipt-table-head" aria-hidden="true"><span>Mã đơn hàng</span><span>Thời gian</span><span>Số lượng món</span><span>Phương thức</span><span>Tổng tiền</span><span>Thao tác</span></div>
       <section className="vp-receipt-list">
         {orders.map((order) => (
           <Link className="vp-receipt-card" href={`/receipts/${encodeURIComponent(order.id)}`} key={order.id}>
             <div className="vp-receipt-top"><strong>{formatOrderCode(order.orderNumber)}</strong><span className="vp-receipt-time">{new Date(order.createdAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}</span><strong>{order.totalVnd.toLocaleString("vi-VN")} đ</strong></div>
             <div className="vp-receipt-bottom"><span>{order.items.reduce((sum, item) => sum + item.quantity, 0)} món</span><span className={`vp-payment-badge ${order.paymentMethod === "transfer" ? "vp-payment-badge--transfer" : ""}`}>{order.paymentMethod === "transfer" ? "Chuyển khoản" : "Tiền mặt"}</span></div>
+            <span className="vp-receipt-detail">Chi tiết</span>
           </Link>
         ))}
         {loaded && orders.length === 0 && <div className="vp-menu-empty">Chưa có hóa đơn nào.</div>}

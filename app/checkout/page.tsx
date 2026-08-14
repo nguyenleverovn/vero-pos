@@ -7,6 +7,7 @@ import { CartItem, clearCart, getCartTotal, loadCart } from "@/lib/cart/cart";
 import { loadCatalog } from "@/lib/repositories/catalogRepository";
 import { PaymentMethod, saveOrder } from "@/lib/repositories/orderRepository";
 import { loadPaymentQrCode } from "@/lib/repositories/qrCodeRepository";
+import { WorkspaceMeta } from "@/components/WorkspaceMeta";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -46,6 +47,7 @@ export default function CheckoutPage() {
       <header className="vp-screen-heading vp-screen-heading--back">
         <Link className="vp-back" href="/"><img src="/icons/chevron-left.svg" alt="Quay lại" /></Link>
         <h1>Thanh toán hóa đơn</h1>
+        <WorkspaceMeta />
       </header>
       <div className="vp-payment-layout">
         <section className="vp-payment-summary">
@@ -60,7 +62,15 @@ export default function CheckoutPage() {
               {qrCode ? <img src={qrCode} alt="QR chuyển khoản" /> : <p>Chưa có QR chuyển khoản. Thêm QR tại trang Hóa đơn.</p>}
             </div>
           )}
+          <button className="vp-primary-button vp-checkout-desktop-action" type="button" disabled={!canComplete} onClick={completeCheckout}>{isCompleting ? "ĐANG LƯU ĐƠN..." : "HOÀN TẤT & IN BILL"}</button>
         </section>
+        <aside className="vp-checkout-order-summary">
+          <h2>Tóm tắt đơn hàng</h2>
+          <ul>{items.map((item) => <li key={item.product.id}><span>{item.quantity}x {item.product.name}</span><strong>{(item.product.priceVnd * item.quantity).toLocaleString("vi-VN")}đ</strong></li>)}</ul>
+          <div><span>Tiền hàng</span><strong>{due.toLocaleString("vi-VN")}đ</strong></div>
+          <div><span>Thuế VAT (0%)</span><strong>0đ</strong></div>
+          <div className="vp-checkout-total"><span>Thanh toán</span><strong>{due.toLocaleString("vi-VN")}đ</strong></div>
+        </aside>
       </div>
       <div className="vp-action-panel"><button className="vp-primary-button" type="button" disabled={!canComplete} onClick={completeCheckout}>{isCompleting ? "ĐANG LƯU ĐƠN..." : "HOÀN TẤT & IN BILL"}</button></div>
     </main>

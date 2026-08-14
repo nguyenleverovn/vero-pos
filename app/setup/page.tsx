@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import { WorkspaceMeta } from "@/components/WorkspaceMeta";
 import {
   createMockCategory,
   createMockProduct,
@@ -24,6 +25,7 @@ export default function ProductSetupPage() {
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState<ProductCategoryId>("coffee");
   const [categoryName, setCategoryName] = useState("");
+  const [note, setNote] = useState("");
   const [active, setActive] = useState(true);
   const [categories, setCategories] = useState<ProductCategory[]>(PRODUCT_CATEGORIES);
   const [products, setProducts] = useState<SetupProduct[]>([]);
@@ -50,6 +52,7 @@ export default function ProductSetupPage() {
         setPrice(String(requestedProduct.priceVnd));
         setCategoryId(requestedProduct.categoryId);
         setActive(requestedProduct.active);
+        setNote(requestedProduct.note ?? "");
       }
     });
     return () => { cancelled = true; };
@@ -60,9 +63,9 @@ export default function ProductSetupPage() {
     if (!canSave) return;
 
     const product = editingId
-      ? { ...products.find((item) => item.id === editingId)!, name: name.trim(), priceVnd, categoryId, active }
+      ? { ...products.find((item) => item.id === editingId)!, name: name.trim(), priceVnd, categoryId, note: note.trim() || undefined, active }
       : createMockProduct(
-        { name: name.trim(), priceVnd, categoryId },
+        { name: name.trim(), priceVnd, categoryId, note: note.trim() || undefined },
         Date.now(),
         active
       );
@@ -75,6 +78,7 @@ export default function ProductSetupPage() {
     setEditingId(null);
     setName("");
     setPrice("");
+    setNote("");
     router.replace("/setup");
   }
 
@@ -98,6 +102,7 @@ export default function ProductSetupPage() {
     setEditingId(null);
     setName("");
     setPrice("");
+    setNote("");
     setActive(true);
     setCategoryId(categories[0]?.id ?? "coffee");
     router.replace("/setup");
@@ -110,15 +115,16 @@ export default function ProductSetupPage() {
           <img src="/icons/chevron-left.svg" alt="" />
         </Link>
         <h1>{editingId ? "Chỉnh sửa món" : "Thêm món mới"}</h1>
+        <WorkspaceMeta />
       </header>
 
       <form className="vp-setup-form" onSubmit={handleSubmit}>
-        <label className="vp-setup-field">
+        <label className="vp-setup-field vp-setup-field--name">
           <span>Tên món <b>*</b></span>
           <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ví dụ: Cà phê Muối" autoComplete="off" />
         </label>
 
-        <label className="vp-setup-field">
+        <label className="vp-setup-field vp-setup-field--price">
           <span>Giá bán (đ) <b>*</b></span>
           <input
             value={price ? Number(price).toLocaleString("en-US") : ""}
@@ -130,21 +136,26 @@ export default function ProductSetupPage() {
         </label>
 
         <div className="vp-setup-status">
-          <div><strong>Trạng thái hoạt động</strong><span>Cho phép bán ngay sau khi tạo</span></div>
+          <div><strong>Hiển thị trên menu</strong><span>Cho phép bán ngay sau khi tạo</span></div>
           <button className={`vp-switch ${active ? "is-on" : ""}`} type="button" onClick={() => setActive((current) => !current)} aria-label={active ? "Tắt trạng thái hoạt động" : "Bật trạng thái hoạt động"} />
         </div>
 
-        <label className="vp-setup-field vp-setup-field--category">
+        <div className="vp-setup-field vp-setup-field--category">
           <span>Danh mục <b>*</b></span>
-          <select value={categoryId} onChange={(event) => setCategoryId(event.target.value as ProductCategoryId)}>
+          <div className="vp-setup-category-tabs" role="radiogroup" aria-label="Chọn danh mục">
             {categories.map((category) => (
-              <option key={category.id} value={category.id}>{category.label}</option>
+              <button className={categoryId === category.id ? "is-active" : ""} type="button" role="radio" aria-checked={categoryId === category.id} key={category.id} onClick={() => setCategoryId(category.id)}>{category.label}</button>
             ))}
-          </select>
+          </div>
           <div className="vp-category-create">
             <input value={categoryName} onChange={(event) => setCategoryName(event.target.value)} placeholder="Tên danh mục mới" autoComplete="off" />
             <button type="button" onClick={handleAddCategory} disabled={!canAddCategory}>Thêm</button>
           </div>
+        </div>
+
+        <label className="vp-setup-field vp-setup-field--note">
+          <span>Mô tả</span>
+          <textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Mô tả ngắn về món..." rows={4} />
         </label>
 
         {products.length > 0 && (

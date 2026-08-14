@@ -16,6 +16,7 @@ export type ProductDraft = {
   name: string;
   priceVnd: number;
   categoryId: ProductCategoryId;
+  note?: string;
 };
 
 export type SetupProduct = ProductDraft & {
