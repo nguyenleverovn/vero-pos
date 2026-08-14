@@ -17,11 +17,26 @@ export type OrderLine = {
 
 export type PosOrder = {
   id: string;
+  orderNumber: string;
   createdAt: string;
   paymentMethod: PaymentMethod;
   items: OrderLine[];
   totalVnd: number;
 };
+
+async function getNextOrderNumber(): Promise<string> {
+  const orders = await loadOrders();
+  // Extract numeric part from order numbers and find max
+  const numbers = orders
+    .map(order => {
+      const match = order.orderNumber.match(/\d+/);
+      return match ? parseInt(match[0], 10) : 0;
+    })
+    .filter(num => num > 0);
+
+  const nextNumber = (Math.max(...numbers, 0) + 1).toString().padStart(2, '0');
+  return `order${nextNumber}`;
+}
 
 function createOrderId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -31,8 +46,11 @@ function createOrderId() {
 }
 
 export async function saveOrder(items: CartItem[], paymentMethod: PaymentMethod): Promise<PosOrder> {
+  const orderNumber = await getNextOrderNumber();
+  
   const order: PosOrder = {
     id: createOrderId(),
+    orderNumber,
     createdAt: new Date().toISOString(),
     paymentMethod,
     items: items.map((item) => ({
@@ -59,4 +77,14 @@ export async function loadOrders(): Promise<PosOrder[]> {
   const orders = await requestToPromise(transaction.objectStore(STORES.orders).getAll()) as PosOrder[];
   await transactionToPromise(transaction);
   return orders.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+}
+
+export async function loadOrderById(orderId: string): Promise<PosOrder | null> {
+  if (typeof window === "undefined") return null;
+
+  const database = await openVeroPosDatabase();
+  const transaction = database.transaction(STORES.orders, "readonly");
+  const order = await requestToPromise(transaction.objectStore(STORES.orders).get(orderId)) as PosOrder | undefined;
+  await transactionToPromise(transaction);
+  return order ?? null;
 }
