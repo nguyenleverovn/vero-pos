@@ -16,6 +16,7 @@ export async function loadCatalog(): Promise<PosCatalog> {
       name: product.name,
       category: product.categoryId,
       priceVnd: product.priceVnd,
+      note: product.note,
       active: product.active
     }))
   };

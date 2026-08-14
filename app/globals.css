@@ -369,7 +369,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .vp-setup-saved li strong { font-size: 14px; }
 .vp-setup-saved li span { color: var(--vp-muted); font-size: 11px; }
 .vp-setup-saved li > b { color: var(--vp-primary); font-size: 13px; white-space: nowrap; }
-.vp-setup-actions { position: fixed; z-index: 32; left: 50%; bottom: 93px; width: min(402px, 100%); display: grid; gap: 10px; transform: translateX(-50%); padding: 16px 28px; border-top: 0; background: white; }
+.vp-setup-actions { position: fixed; z-index: 32; left: 50%; bottom: 93px; width: min(346px, calc(100% - 56px)); display: grid; gap: 10px; transform: translateX(-50%); padding: 16px 0; border-top: 0; background: white; }
 .vp-save-product { min-height: 70px; background: var(--vp-primary); text-transform: uppercase; font-size: 17px; }
 .vp-start-selling { min-height: 48px; border: 0; display: grid; place-items: center; border-radius: 12px; background: var(--vp-action); color: white; text-decoration: none; font-size: 15px; font-weight: 800; cursor: pointer; }
 
