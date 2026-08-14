@@ -4,16 +4,23 @@ import { ReactNode, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { isProductSetupComplete } from "@/lib/repositories/productSetupRepository";
 
+const ENTRY_SESSION_KEY = "vero-pos:entered";
+
 export function OnboardingGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [entered, setEntered] = useState(false);
+  const [entered, setEntered] = useState(() =>
+    typeof window !== "undefined" && window.sessionStorage.getItem(ENTRY_SESSION_KEY) === "1"
+  );
   const [allowedPath, setAllowedPath] = useState<string | null>(null);
   const isSetupPath = pathname === "/setup";
   const isWelcomePath = pathname === "/welcome";
 
   useEffect(() => {
-    const handleEnter = () => setEntered(true);
+    const handleEnter = () => {
+      window.sessionStorage.setItem(ENTRY_SESSION_KEY, "1");
+      setEntered(true);
+    };
     window.addEventListener("vero-pos:enter", handleEnter);
     return () => window.removeEventListener("vero-pos:enter", handleEnter);
   }, []);

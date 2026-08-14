@@ -50,9 +50,12 @@ export default function ServiceWorkerRegister() {
 
     const register = async () => {
       try {
-        const registration = await navigator.serviceWorker.register("/sw.js");
-        await registration.update();
-      } catch {}
+        await navigator.serviceWorker.register("/sw.js");
+        await navigator.serviceWorker.ready;
+      } catch (error) {
+        // Keep the app usable if the browser rejects service-worker storage.
+        console.error("VERO POS offline setup failed", error);
+      }
     };
 
     void register();

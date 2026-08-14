@@ -1,4 +1,4 @@
-const CACHE_NAME = "vero-pos-v4";
+const CACHE_NAME = "vero-pos-v5";
 const APP_ROUTES = [
   "/",
   "/welcome",
