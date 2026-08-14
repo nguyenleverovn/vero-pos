@@ -1,4 +1,4 @@
-const CACHE_NAME = "vero-pos-v5";
+const CACHE_NAME = "vero-pos-v6";
 const APP_ROUTES = [
   "/",
   "/welcome",
@@ -20,8 +20,8 @@ const STATIC_ASSETS = [
   "/icons/vero-pos-brand-lockup.png",
   "/icons/vero-pos-icon.png",
   "/icons/vero-pos-logo-full.png",
-  "/icons/vero-pos-pwa-192.png",
-  "/icons/vero-pos-pwa-512.png"
+  "/icons/vero-pos-app-192-v2.png",
+  "/icons/vero-pos-app-512-v2.png"
 ];
 
 function canCache(response) {
