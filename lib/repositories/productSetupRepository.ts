@@ -118,3 +118,21 @@ export async function updateSetupProductActive(productId: string, active: boolea
     products: state.products.map((product) => product.id === productId ? { ...product, active } : product)
   });
 }
+
+export async function updateSetupProduct(productId: string, updates: Partial<SetupProduct>): Promise<void> {
+  const state = await loadProductSetup();
+  await saveProductSetup({
+    ...state,
+    products: state.products.map((product) => 
+      product.id === productId ? { ...product, ...updates } : product
+    )
+  });
+}
+
+export async function deleteSetupProduct(productId: string): Promise<void> {
+  const state = await loadProductSetup();
+  await saveProductSetup({
+    ...state,
+    products: state.products.filter((product) => product.id !== productId)
+  });
+}
