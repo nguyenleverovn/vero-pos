@@ -10,13 +10,27 @@ export default function ServiceWorkerRegister() {
       setInstallPrompt(event as VeroInstallPrompt);
     };
     const clearInstallPrompt = () => setInstallPrompt(null);
+    const openCachedPageOffline = (event: MouseEvent) => {
+      if (navigator.onLine || event.defaultPrevented || event.button !== 0) return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const link = target.closest<HTMLAnchorElement>("a[href]");
+      if (!link || link.target === "_blank" || link.hasAttribute("download")) return;
+
+      const url = new URL(link.href, window.location.href);
+      if (url.origin !== window.location.origin) return;
+      event.preventDefault();
+      window.location.href = url.href;
+    };
     window.addEventListener("beforeinstallprompt", captureInstallPrompt);
     window.addEventListener("appinstalled", clearInstallPrompt);
+    document.addEventListener("click", openCachedPageOffline);
 
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
       return () => {
         window.removeEventListener("beforeinstallprompt", captureInstallPrompt);
         window.removeEventListener("appinstalled", clearInstallPrompt);
+        document.removeEventListener("click", openCachedPageOffline);
       };
     }
 
@@ -30,6 +44,7 @@ export default function ServiceWorkerRegister() {
       return () => {
         window.removeEventListener("beforeinstallprompt", captureInstallPrompt);
         window.removeEventListener("appinstalled", clearInstallPrompt);
+        document.removeEventListener("click", openCachedPageOffline);
       };
     }
 
@@ -37,12 +52,7 @@ export default function ServiceWorkerRegister() {
       try {
         const registration = await navigator.serviceWorker.register("/sw.js");
         await registration.update();
-        // eslint-disable-next-line no-console
-        console.log("SW registered:", registration.scope);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("SW register failed:", error);
-      }
+      } catch {}
     };
 
     void register();
@@ -50,6 +60,7 @@ export default function ServiceWorkerRegister() {
     return () => {
       window.removeEventListener("beforeinstallprompt", captureInstallPrompt);
       window.removeEventListener("appinstalled", clearInstallPrompt);
+      document.removeEventListener("click", openCachedPageOffline);
     };
   }, []);
 
