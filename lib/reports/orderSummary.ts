@@ -36,7 +36,7 @@ function periodLabel(period: SummaryPeriod, now: Date) {
   return `Năm ${now.getFullYear()}`;
 }
 
-function timelineFor(period: SummaryPeriod, orders: PosOrder[], start: Date) {
+function timelineFor(period: SummaryPeriod, orders: PosOrder[]) {
   const count = period === "year" ? 12 : period === "month" ? 7 : 6;
   const values = Array.from({ length: count }, () => 0);
 
@@ -95,7 +95,7 @@ export function summarizeOrders(orders: PosOrder[], period: SummaryPeriod, now =
     orderCount: currentOrders.length,
     averageOrder: currentOrders.length > 0 ? Math.round(revenue / currentOrders.length) : 0,
     growthPercent: previousRevenue > 0 ? Math.round((revenue - previousRevenue) / previousRevenue * 100) : null,
-    timeline: timelineFor(period, currentOrders, start),
+    timeline: timelineFor(period, currentOrders),
     topProducts: topProductsFor(currentOrders)
   };
 }

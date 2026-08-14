@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { formatOrderCode, loadOrder, PosOrder } from "@/lib/repositories/orderRepository";
 
@@ -17,7 +18,7 @@ export default function ReceiptDetailPage() {
   return (
     <main className="vp-screen vp-screen--plain">
       <header className="vp-screen-heading vp-screen-heading--back">
-        <Link className="vp-back" href="/receipts"><img src="/icons/chevron-left.svg" alt="Quay lại" /></Link>
+        <Link className="vp-back" href="/receipts"><Image src="/icons/chevron-left.svg" alt="Quay lại" width={24} height={24} unoptimized /></Link>
         <h1>Chi tiết hóa đơn</h1>
       </header>
       {order ? (
