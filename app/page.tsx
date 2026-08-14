@@ -19,7 +19,7 @@ import { loadCatalog } from "@/lib/repositories/catalogRepository";
 
 export default function VeroPosPage() {
   const [catalog, setCatalog] = useState<PosCatalog | null>(null);
-  const [activeCategory, setActiveCategory] = useState<CategoryId>("coffee");
+  const [activeCategory, setActiveCategory] = useState<CategoryId | "all">("all");
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
@@ -35,8 +35,10 @@ export default function VeroPosPage() {
 
   if (!catalog) return <main className="vp-screen"><Header /></main>;
 
-  const visibleProducts = catalog.products.filter((product) =>
-    product.active && product.category === activeCategory);
+  const visibleProducts = activeCategory === "all"
+    ? catalog.products.filter((product) => product.active)
+    : catalog.products.filter((product) =>
+        product.active && product.category === activeCategory);
 
   const addToCart = (product: Product) => setItems((current) => addProduct(current, product));
   const updateCartItem = (next: CartItem) => setItems((current) =>
