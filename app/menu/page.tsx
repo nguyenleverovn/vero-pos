@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PosCatalog } from "@/lib/data/catalog";
 import { loadCatalog } from "@/lib/repositories/catalogRepository";
+import { WorkspaceMeta } from "@/components/WorkspaceMeta";
 import {
   deleteSetupProduct,
   updateSetupCategoryOrder,
@@ -13,9 +14,12 @@ import {
 export default function MenuPage() {
   const [catalog, setCatalog] = useState<PosCatalog | null>(null);
   const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
   const [enabled, setEnabled] = useState<Record<string, boolean>>({});
   const products = catalog?.products ?? [];
-  const visible = products.filter((product) => product.name.toLocaleLowerCase("vi").includes(query.toLocaleLowerCase("vi")));
+  const visible = products.filter((product) =>
+    product.name.toLocaleLowerCase("vi").includes(query.toLocaleLowerCase("vi"))
+    && (activeCategory === "all" || product.category === activeCategory));
 
   useEffect(() => {
     loadCatalog().then((data) => {
@@ -58,8 +62,17 @@ export default function MenuPage() {
 
   return (
     <main className="vp-screen vp-screen--plain">
-      <header className="vp-screen-heading"><h1>Quản lý Thực đơn</h1></header>
-      <label className="vp-search"><img src="/icons/search.svg" alt="" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm món..." aria-label="Tìm món" /></label>
+      <header className="vp-screen-heading"><h1>Quản lý Thực đơn</h1><WorkspaceMeta /></header>
+      <section className="vp-menu-toolbar">
+        <div className="vp-menu-filters" role="tablist" aria-label="Lọc danh mục">
+          <button type="button" className={activeCategory === "all" ? "is-active" : ""} onClick={() => setActiveCategory("all")}>Tất cả</button>
+          {catalog?.categories.map((category) => <button type="button" role="tab" aria-selected={activeCategory === category.id} className={activeCategory === category.id ? "is-active" : ""} key={category.id} onClick={() => setActiveCategory(category.id)}>{category.label}</button>)}
+        </div>
+        <div className="vp-menu-tools">
+          <label className="vp-search"><img src="/icons/search.svg" alt="" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm tên món..." aria-label="Tìm món" /></label>
+          <Link className="vp-menu-add" href="/setup">Thêm món mới</Link>
+        </div>
+      </section>
       {catalog && (
         <section className="vp-menu-category-order" aria-label="Sắp xếp danh mục">
           <div className="vp-menu-category-heading">
@@ -79,14 +92,17 @@ export default function MenuPage() {
           </div>
         </section>
       )}
+      <div className="vp-menu-table-head" aria-hidden="true"><span>Tên món</span><span>Danh mục</span><span>Giá bán</span><span>Trạng thái phục vụ</span><span>Hành động</span></div>
       <section className="vp-menu-list">
         {visible.length > 0 ? visible.map((product) => (
           <article className={`vp-menu-item ${enabled[product.id] ? "" : "is-disabled"}`} key={product.id}>
-            <div className="vp-menu-copy"><strong>{product.name}</strong><span>{product.priceVnd.toLocaleString("vi-VN")}đ&nbsp; • &nbsp;{catalog?.categories.find((item) => item.id === product.category)?.label}</span></div>
+            <strong className="vp-menu-name">{product.name}</strong>
+            <span className="vp-menu-category">{catalog?.categories.find((item) => item.id === product.category)?.label}</span>
+            <strong className="vp-menu-price">{product.priceVnd.toLocaleString("vi-VN")} đ</strong>
+            <div className="vp-menu-service"><button className={`vp-switch ${enabled[product.id] ? "is-on" : ""}`} type="button" onClick={() => toggleProduct(product.id)} aria-label={`${enabled[product.id] ? "Tắt" : "Bật"} ${product.name}`} /></div>
             <div className="vp-menu-actions">
               <Link className="vp-menu-edit" href={`/setup?edit=${encodeURIComponent(product.id)}`}>Sửa</Link>
               <button className="vp-menu-delete" type="button" onClick={() => removeProduct(product.id, product.name)}>Xóa</button>
-              <button className={`vp-switch ${enabled[product.id] ? "is-on" : ""}`} type="button" onClick={() => toggleProduct(product.id)} aria-label={`${enabled[product.id] ? "Tắt" : "Bật"} ${product.name}`} />
             </div>
           </article>
         )) : <div className="vp-menu-empty">Chưa có món phù hợp.</div>}

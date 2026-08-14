@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./responsive.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { BottomNav } from "@/components/BottomNav";
 import { Sidebar } from "@/components/Sidebar";
@@ -16,8 +17,8 @@ export const metadata: Metadata = {
     title: "VERO POS"
   },
   icons: {
-    icon: "/icons/vero-pos-icon.png",
-    apple: "/icons/vero-pos-icon.png"
+    icon: "/icons/vero-pos-pwa-192.png",
+    apple: "/icons/vero-pos-pwa-192.png"
   }
 };
 

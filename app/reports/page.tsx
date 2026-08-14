@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { V1DataTools } from "@/components/V1DataTools";
 import { loadOrders, PosOrder } from "@/lib/repositories/orderRepository";
 import { summarizeOrders, SummaryPeriod } from "@/lib/reports/orderSummary";
+import { WorkspaceMeta } from "@/components/WorkspaceMeta";
 
 const PERIODS: Array<{ id: SummaryPeriod; label: string }> = [
   { id: "day", label: "Ngày" },
@@ -30,12 +31,12 @@ export default function ReportsPage() {
 
   return (
     <main className="vp-screen vp-screen--plain">
-      <header className="vp-screen-heading"><h1>Tổng kết bán hàng</h1><span className="vp-payment-badge">{summary.label}</span></header>
+      <header className="vp-screen-heading"><h1>Báo cáo Doanh thu</h1><WorkspaceMeta /></header>
       <div className="vp-period-tabs" role="tablist" aria-label="Kỳ tổng kết">
         {PERIODS.map((item) => <button key={item.id} role="tab" aria-selected={period === item.id} className={period === item.id ? "is-active" : ""} onClick={() => setPeriod(item.id)}>{item.label}</button>)}
       </div>
-      <section className="vp-hero-metric"><span>Doanh thu {period === "day" ? "hôm nay" : period === "month" ? "tháng này" : "năm nay"}</span><strong>{summary.revenue.toLocaleString("vi-VN")} đ</strong><small>{summary.growthPercent === null ? "Chưa có dữ liệu kỳ trước" : <><b>{summary.growthPercent >= 0 ? "+" : ""}{summary.growthPercent}%</b>&nbsp; so với kỳ trước</>}</small></section>
-      <section className="vp-stat-row" style={{ marginTop: 12 }}>
+      <section className="vp-report-kpis">
+        <div className="vp-hero-metric"><span>Doanh thu {period === "day" ? "hôm nay" : period === "month" ? "tháng này" : "năm nay"}</span><strong>{summary.revenue.toLocaleString("vi-VN")} đ</strong><small>{summary.growthPercent === null ? "Chưa có dữ liệu kỳ trước" : <><b>{summary.growthPercent >= 0 ? "+" : ""}{summary.growthPercent}%</b>&nbsp; so với kỳ trước</>}</small></div>
         <div className="vp-stat vp-stat--white"><span>Số đơn hàng</span><strong>{summary.orderCount} đơn</strong></div>
         <div className="vp-stat vp-stat--white"><span>Trung bình đơn</span><strong>{summary.averageOrder.toLocaleString("vi-VN")} đ</strong></div>
       </section>

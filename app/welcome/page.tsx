@@ -28,7 +28,7 @@ export default function WelcomePage() {
         <img className="vp-welcome-logo" src="/icons/vero-pos-logo-full.png" alt="VERO POS - CHẠM LÀ CHẠY" />
         <button className="vp-primary-button vp-welcome-start" type="button" onClick={handleStart} disabled={!ready}>CHẠY</button>
         <p className="vp-welcome-purpose">“100 ly là mục tiêu, 1000 ly là mục đích”</p>
-        <p className="vp-welcome-hotline">Hotline: 028 629 0001</p>
+        <p className="vp-welcome-hotline">Hotline: 028 6290 0001</p>
       </section>
       <p className="vp-welcome-powered">Powered by <strong>Vero SOL</strong></p>
     </main>
