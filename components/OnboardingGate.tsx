@@ -8,7 +8,7 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [entered, setEntered] = useState(false);
-  const [canRender, setCanRender] = useState(false);
+  const [allowedPath, setAllowedPath] = useState<string | null>(null);
   const isSetupPath = pathname === "/setup";
   const isWelcomePath = pathname === "/welcome";
 
@@ -20,24 +20,23 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    setCanRender(false);
 
     isProductSetupComplete().then((setupCompleted) => {
       if (cancelled) return;
 
       if (isWelcomePath) {
-        setCanRender(true);
+        setAllowedPath(pathname);
       } else if (!entered) {
         router.replace("/welcome");
       } else if (!setupCompleted && !isSetupPath) {
         router.replace("/welcome");
       } else {
-        setCanRender(true);
+        setAllowedPath(pathname);
       }
     });
 
     return () => { cancelled = true; };
   }, [entered, isSetupPath, isWelcomePath, pathname, router]);
 
-  return canRender ? children : null;
+  return allowedPath === pathname ? children : null;
 }
