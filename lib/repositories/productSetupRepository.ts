@@ -145,3 +145,15 @@ export async function deleteSetupProduct(productId: string): Promise<void> {
     products: state.products.filter((product) => product.id !== productId)
   });
 }
+
+export async function deleteSetupCategory(categoryId: ProductCategory["id"]): Promise<boolean> {
+  const state = await loadProductSetup();
+  const hasProducts = state.products.some((product) => product.categoryId === categoryId);
+  if (hasProducts || state.categories.length <= 1) return false;
+
+  await saveProductSetup({
+    ...state,
+    categories: state.categories.filter((category) => category.id !== categoryId)
+  });
+  return true;
+}

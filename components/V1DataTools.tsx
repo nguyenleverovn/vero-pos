@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { createBackup, parseBackup, restoreBackup } from "@/lib/repositories/backupRepository";
+import { createBackup, parseBackup, resetVeroPosData, restoreBackup } from "@/lib/repositories/backupRepository";
 import { getInstallPrompt, setInstallPrompt } from "@/lib/pwa/installPrompt";
 
 function backupFileName() {
@@ -83,6 +83,22 @@ export function V1DataTools() {
     }
   }
 
+  async function handleReset() {
+    if (!window.confirm("Nên xuất file backup trước khi reset. Anh vẫn muốn tiếp tục?")) return;
+    if (!window.confirm("Xóa toàn bộ sản phẩm, danh mục, hóa đơn và thiết lập trên thiết bị này?")) return;
+
+    setBusy(true);
+    setMessage("");
+    try {
+      await resetVeroPosData();
+      setMessage("Đã reset dữ liệu. Đang trở về màn hình chào mừng...");
+      window.setTimeout(() => window.location.assign("/welcome"), 700);
+    } catch {
+      setMessage("Không thể reset dữ liệu. Vui lòng thử lại.");
+      setBusy(false);
+    }
+  }
+
   return (
     <section className="vp-v1-tools">
       <div className="vp-v1-tools-heading">
@@ -105,6 +121,11 @@ export function V1DataTools() {
           <span>Thay toàn bộ dữ liệu bằng một bản backup V1</span>
           <button type="button" onClick={() => inputRef.current?.click()} disabled={busy}>Chọn file để khôi phục</button>
           <input ref={inputRef} type="file" accept="application/json,.json" onChange={handleRestore} hidden />
+        </article>
+        <article className="vp-tool-card vp-tool-card--reset">
+          <strong>Reset dữ liệu</strong>
+          <span>Xóa toàn bộ dữ liệu thử nghiệm và đưa app về trạng thái ban đầu</span>
+          <button type="button" onClick={handleReset} disabled={busy}>Xóa toàn bộ dữ liệu</button>
         </article>
       </div>
       {message && <p className="vp-tool-message" role="status">{message}</p>}

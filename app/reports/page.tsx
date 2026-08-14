@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { V1DataTools } from "@/components/V1DataTools";
 import { loadOrders, PosOrder } from "@/lib/repositories/orderRepository";
-import { summarizeOrders, SummaryPeriod } from "@/lib/reports/orderSummary";
+import { summarizeOrders, summarizeOrdersInRange, SummaryPeriod } from "@/lib/reports/orderSummary";
 import { WorkspaceMeta } from "@/components/WorkspaceMeta";
 
 const PERIODS: Array<{ id: SummaryPeriod; label: string }> = [
@@ -12,11 +12,30 @@ const PERIODS: Array<{ id: SummaryPeriod; label: string }> = [
   { id: "year", label: "Năm" }
 ];
 
+function dateInputValue(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function localDate(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 export default function ReportsPage() {
   const [orders, setOrders] = useState<PosOrder[]>([]);
   const [period, setPeriod] = useState<SummaryPeriod>("day");
   const [loaded, setLoaded] = useState(false);
-  const summary = useMemo(() => summarizeOrders(orders, period), [orders, period]);
+  const [rangeOpen, setRangeOpen] = useState(false);
+  const [rangeStart, setRangeStart] = useState("");
+  const [rangeEnd, setRangeEnd] = useState("");
+  const [customRange, setCustomRange] = useState<{ start: string; end: string } | null>(null);
+  const summary = useMemo(() => customRange
+    ? summarizeOrdersInRange(orders, localDate(customRange.start), localDate(customRange.end))
+    : summarizeOrders(orders, period), [customRange, orders, period]);
+  const rangeValid = Boolean(rangeStart && rangeEnd && rangeStart <= rangeEnd);
 
   useEffect(() => {
     let cancelled = false;
@@ -29,20 +48,54 @@ export default function ReportsPage() {
     return () => { cancelled = true; };
   }, []);
 
+  function toggleRangePicker() {
+    if (!rangeStart || !rangeEnd) {
+      const today = new Date();
+      setRangeStart(dateInputValue(new Date(today.getFullYear(), today.getMonth(), 1)));
+      setRangeEnd(dateInputValue(today));
+    }
+    setRangeOpen((current) => !current);
+  }
+
+  function applyRange() {
+    if (!rangeValid) return;
+    setCustomRange({ start: rangeStart, end: rangeEnd });
+    setRangeOpen(false);
+  }
+
+  function selectPeriod(nextPeriod: SummaryPeriod) {
+    setPeriod(nextPeriod);
+    setCustomRange(null);
+    setRangeOpen(false);
+  }
+
   return (
     <main className="vp-screen vp-screen--plain">
       <header className="vp-screen-heading"><h1>Báo cáo Doanh thu</h1><WorkspaceMeta /></header>
       <div className="vp-period-tabs" role="tablist" aria-label="Kỳ tổng kết">
-        {PERIODS.map((item) => <button key={item.id} role="tab" aria-selected={period === item.id} className={period === item.id ? "is-active" : ""} onClick={() => setPeriod(item.id)}>{item.label}</button>)}
+        {PERIODS.map((item) => <button key={item.id} role="tab" aria-selected={!customRange && period === item.id} className={!customRange && period === item.id ? "is-active" : ""} onClick={() => selectPeriod(item.id)}>{item.label}</button>)}
+      </div>
+      <div className="vp-report-date-control">
+        <button className="vp-report-date-trigger" type="button" onClick={toggleRangePicker} aria-expanded={rangeOpen}>
+          <span>Khoảng thời gian</span><strong>{summary.label}</strong>
+        </button>
+        {rangeOpen && (
+          <div className="vp-report-date-panel">
+            <label><span>Từ ngày</span><input type="date" value={rangeStart} onChange={(event) => setRangeStart(event.target.value)} /></label>
+            <label><span>Đến ngày</span><input type="date" value={rangeEnd} min={rangeStart} onChange={(event) => setRangeEnd(event.target.value)} /></label>
+            <button className="vp-report-date-apply" type="button" onClick={applyRange} disabled={!rangeValid}>Áp dụng</button>
+            {customRange && <button className="vp-report-date-clear" type="button" onClick={() => { setCustomRange(null); setRangeOpen(false); }}>Về kỳ hiện tại</button>}
+          </div>
+        )}
       </div>
       <section className="vp-report-kpis">
-        <div className="vp-hero-metric"><span>Doanh thu {period === "day" ? "hôm nay" : period === "month" ? "tháng này" : "năm nay"}</span><strong>{summary.revenue.toLocaleString("vi-VN")} đ</strong><small>{summary.growthPercent === null ? "Chưa có dữ liệu kỳ trước" : <><b>{summary.growthPercent >= 0 ? "+" : ""}{summary.growthPercent}%</b>&nbsp; so với kỳ trước</>}</small></div>
+        <div className="vp-hero-metric"><span>{customRange ? "Doanh thu trong khoảng đã chọn" : `Doanh thu ${period === "day" ? "hôm nay" : period === "month" ? "tháng này" : "năm nay"}`}</span><strong>{summary.revenue.toLocaleString("vi-VN")} đ</strong><small>{customRange ? summary.label : summary.growthPercent === null ? "Chưa có dữ liệu kỳ trước" : <><b>{summary.growthPercent >= 0 ? "+" : ""}{summary.growthPercent}%</b>&nbsp; so với kỳ trước</>}</small></div>
         <div className="vp-stat vp-stat--white"><span>Số đơn hàng</span><strong>{summary.orderCount} đơn</strong></div>
         <div className="vp-stat vp-stat--white"><span>Trung bình đơn</span><strong>{summary.averageOrder.toLocaleString("vi-VN")} đ</strong></div>
       </section>
       {!loaded ? <div className="vp-menu-empty">Đang tải dữ liệu bán hàng...</div> : (
         <div className="vp-report-grid">
-          <section><h2 className="vp-section-title">Doanh thu theo {period === "day" ? "giờ" : period === "month" ? "ngày" : "tháng"}</h2><div className="vp-chart-card">{summary.timeline.map((item) => <div className="vp-bar-item" key={item.label} title={`${item.revenue.toLocaleString("vi-VN")}đ`}><span className="vp-bar" style={{ height: `${item.height}%` }} /><span>{item.label}</span></div>)}</div></section>
+          <section><h2 className="vp-section-title">Doanh thu theo {customRange ? "khoảng ngày" : period === "day" ? "giờ" : period === "month" ? "ngày" : "tháng"}</h2><div className="vp-chart-card">{summary.timeline.map((item) => <div className="vp-bar-item" key={item.label} title={`${item.revenue.toLocaleString("vi-VN")}đ`}><span className="vp-bar" style={{ height: `${item.height}%` }} /><span>{item.label}</span></div>)}</div></section>
           <section><h2 className="vp-section-title">Món bán chạy nhất</h2><div className="vp-ranking">{summary.topProducts.length > 0 ? summary.topProducts.map((item, index) => <div className="vp-rank-item" key={item.name}><span className="vp-rank-number">{index + 1}</span><span className="vp-rank-name">{item.name}</span><span className="vp-rank-qty">{item.quantity} ly</span><span className="vp-rank-revenue">{item.revenue.toLocaleString("vi-VN")}đ</span></div>) : <div className="vp-menu-empty">Chưa có đơn trong kỳ này.</div>}</div></section>
         </div>
       )}

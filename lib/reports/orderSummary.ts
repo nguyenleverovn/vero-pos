@@ -59,6 +59,21 @@ function timelineFor(period: SummaryPeriod, orders: PosOrder[], start: Date) {
   }));
 }
 
+function topProductsFor(orders: PosOrder[]) {
+  const products = new Map<string, { name: string; quantity: number; revenue: number }>();
+
+  orders.forEach((order) => order.items.forEach((item) => {
+    const current = products.get(item.productId) ?? { name: item.name, quantity: 0, revenue: 0 };
+    current.quantity += item.quantity;
+    current.revenue += item.priceVnd * item.quantity;
+    products.set(item.productId, current);
+  }));
+
+  return Array.from(products.values())
+    .sort((left, right) => right.quantity - left.quantity)
+    .slice(0, 5);
+}
+
 export function summarizeOrders(orders: PosOrder[], period: SummaryPeriod, now = new Date()): OrderSummary {
   const start = startOfPeriod(period, now);
   const end = nextPeriod(period, start);
@@ -73,14 +88,6 @@ export function summarizeOrders(orders: PosOrder[], period: SummaryPeriod, now =
   });
   const revenue = currentOrders.reduce((sum, order) => sum + order.totalVnd, 0);
   const previousRevenue = previousOrders.reduce((sum, order) => sum + order.totalVnd, 0);
-  const products = new Map<string, { name: string; quantity: number; revenue: number }>();
-
-  currentOrders.forEach((order) => order.items.forEach((item) => {
-    const current = products.get(item.productId) ?? { name: item.name, quantity: 0, revenue: 0 };
-    current.quantity += item.quantity;
-    current.revenue += item.priceVnd * item.quantity;
-    products.set(item.productId, current);
-  }));
 
   return {
     label: periodLabel(period, now),
@@ -89,6 +96,46 @@ export function summarizeOrders(orders: PosOrder[], period: SummaryPeriod, now =
     averageOrder: currentOrders.length > 0 ? Math.round(revenue / currentOrders.length) : 0,
     growthPercent: previousRevenue > 0 ? Math.round((revenue - previousRevenue) / previousRevenue * 100) : null,
     timeline: timelineFor(period, currentOrders, start),
-    topProducts: Array.from(products.values()).sort((left, right) => right.quantity - left.quantity).slice(0, 5)
+    topProducts: topProductsFor(currentOrders)
+  };
+}
+
+export function summarizeOrdersInRange(orders: PosOrder[], rangeStart: Date, rangeEnd: Date): OrderSummary {
+  const start = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate());
+  const end = new Date(rangeEnd.getFullYear(), rangeEnd.getMonth(), rangeEnd.getDate() + 1);
+  const selectedOrders = orders.filter((order) => {
+    const createdAt = new Date(order.createdAt);
+    return createdAt >= start && createdAt < end;
+  });
+  const revenue = selectedOrders.reduce((sum, order) => sum + order.totalVnd, 0);
+  const dayCount = Math.max(1, Math.round((end.getTime() - start.getTime()) / 86_400_000));
+  const bucketCount = Math.min(dayCount, 14);
+  const values = Array.from({ length: bucketCount }, () => 0);
+
+  selectedOrders.forEach((order) => {
+    const dayOffset = Math.max(0, Math.floor((new Date(order.createdAt).getTime() - start.getTime()) / 86_400_000));
+    const index = Math.min(bucketCount - 1, Math.floor(dayOffset / dayCount * bucketCount));
+    values[index] += order.totalVnd;
+  });
+
+  const maximum = Math.max(...values, 1);
+  const timeline = values.map((value, index) => {
+    const bucketDate = new Date(start);
+    bucketDate.setDate(start.getDate() + Math.floor(index * dayCount / bucketCount));
+    return {
+      label: bucketDate.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" }),
+      revenue: value,
+      height: value === 0 ? 4 : Math.max(12, Math.round(value / maximum * 100))
+    };
+  });
+
+  return {
+    label: `${start.toLocaleDateString("vi-VN")} - ${rangeEnd.toLocaleDateString("vi-VN")}`,
+    revenue,
+    orderCount: selectedOrders.length,
+    averageOrder: selectedOrders.length > 0 ? Math.round(revenue / selectedOrders.length) : 0,
+    growthPercent: null,
+    timeline,
+    topProducts: topProductsFor(selectedOrders)
   };
 }
