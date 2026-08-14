@@ -1,17 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { formatOrderCode, loadOrder, PosOrder } from "@/lib/repositories/orderRepository";
 
 export default function ReceiptDetailPage() {
-  const params = useParams<{ id: string }>();
   const [order, setOrder] = useState<PosOrder | null | undefined>(undefined);
 
   useEffect(() => {
-    loadOrder(decodeURIComponent(params.id)).then((savedOrder) => setOrder(savedOrder ?? null));
-  }, [params.id]);
+    const orderId = decodeURIComponent(window.location.pathname.split("/").pop() ?? "");
+    loadOrder(orderId).then((savedOrder) => setOrder(savedOrder ?? null));
+  }, []);
 
   if (order === undefined) return <main className="vp-screen vp-screen--plain" />;
 

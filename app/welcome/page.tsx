@@ -1,11 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { isProductSetupComplete } from "@/lib/repositories/productSetupRepository";
 
+const ENTRY_SESSION_KEY = "vero-pos:entered";
+
 export default function WelcomePage() {
-  const router = useRouter();
   const [ready, setReady] = useState(false);
   const [setupCompleted, setSetupCompleted] = useState(false);
 
@@ -18,8 +18,9 @@ export default function WelcomePage() {
 
   function handleStart() {
     if (!ready) return;
+    window.sessionStorage.setItem(ENTRY_SESSION_KEY, "1");
     window.dispatchEvent(new Event("vero-pos:enter"));
-    router.push(setupCompleted ? "/" : "/setup");
+    window.location.assign(setupCompleted ? "/" : "/setup");
   }
 
   return (
