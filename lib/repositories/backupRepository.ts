@@ -74,3 +74,17 @@ export async function restoreBackup(backup: VeroPosBackup): Promise<void> {
 
   await transactionToPromise(transaction);
 }
+
+export async function resetVeroPosData(): Promise<void> {
+  const database = await openVeroPosDatabase();
+  const transaction = database.transaction(STORE_NAMES, "readwrite");
+
+  await Promise.all(STORE_NAMES.map((storeName) =>
+    requestToPromise(transaction.objectStore(storeName).clear())
+  ));
+  await transactionToPromise(transaction);
+
+  if (typeof window !== "undefined") {
+    window.localStorage.removeItem("vero-pos-product-setup-v1");
+  }
+}
