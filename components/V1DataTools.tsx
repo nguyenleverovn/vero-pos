@@ -92,7 +92,7 @@ export function V1DataTools() {
     try {
       await resetVeroPosData();
       setMessage("Đã reset dữ liệu. Đang trở về màn hình chào mừng...");
-      window.setTimeout(() => window.location.assign("/welcome"), 700);
+      window.setTimeout(() => window.location.assign(new URL("/welcome", window.location.href).href), 700);
     } catch {
       setMessage("Không thể reset dữ liệu. Vui lòng thử lại.");
       setBusy(false);

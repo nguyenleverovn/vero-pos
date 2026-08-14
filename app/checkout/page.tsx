@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CartItem, clearCart, getCartTotal, loadCart } from "@/lib/cart/cart";
@@ -45,7 +46,7 @@ export default function CheckoutPage() {
   return (
     <main className="vp-screen vp-screen--action">
       <header className="vp-screen-heading vp-screen-heading--back">
-        <Link className="vp-back" href="/"><img src="/icons/chevron-left.svg" alt="Quay lại" /></Link>
+        <Link className="vp-back" href="/"><Image src="/icons/chevron-left.svg" alt="Quay lại" width={24} height={24} unoptimized /></Link>
         <h1>Thanh toán hóa đơn</h1>
         <WorkspaceMeta />
       </header>
@@ -59,7 +60,7 @@ export default function CheckoutPage() {
           </div>
           {method === "transfer" && (
             <div className="vp-checkout-qr">
-              {qrCode ? <img src={qrCode} alt="QR chuyển khoản" /> : <p>Chưa có QR chuyển khoản. Thêm QR tại trang Hóa đơn.</p>}
+              {qrCode ? <Image src={qrCode} alt="QR chuyển khoản" width={240} height={240} unoptimized /> : <p>Chưa có QR chuyển khoản. Thêm QR tại trang Hóa đơn.</p>}
             </div>
           )}
           <button className="vp-primary-button vp-checkout-desktop-action" type="button" disabled={!canComplete} onClick={completeCheckout}>{isCompleting ? "ĐANG LƯU ĐƠN..." : "HOÀN TẤT & IN BILL"}</button>

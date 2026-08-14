@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { formatOrderCode, loadOrders, PosOrder } from "@/lib/repositories/orderRepository";
 import { clearPaymentQrCode, loadPaymentQrCode, savePaymentQrCode } from "@/lib/repositories/qrCodeRepository";
@@ -62,7 +63,7 @@ export default function ReceiptsPage() {
       </section>
       <section className="vp-qr-settings">
         <div className="vp-qr-settings-copy"><strong>QR chuyển khoản</strong><span>QR này sẽ hiện khi chọn thanh toán chuyển khoản.</span></div>
-        {qrCode ? <img src={qrCode} alt="QR chuyển khoản" /> : <div className="vp-qr-empty">Chưa có QR</div>}
+        {qrCode ? <Image src={qrCode} alt="QR chuyển khoản" width={82} height={82} unoptimized /> : <div className="vp-qr-empty">Chưa có QR</div>}
         <div className="vp-qr-actions">
           <label><input type="file" accept="image/*" onChange={handleQrChange} /><span>{qrCode ? "Đổi QR" : "Thêm QR"}</span></label>
           {qrCode && <button type="button" onClick={removeQrCode}>Xóa QR</button>}

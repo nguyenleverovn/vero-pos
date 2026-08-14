@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { PosCatalog } from "@/lib/data/catalog";
 import { loadCatalog } from "@/lib/repositories/catalogRepository";
@@ -98,7 +99,7 @@ export default function MenuPage() {
           {catalog?.categories.map((category) => <button type="button" role="tab" aria-selected={activeCategory === category.id} className={activeCategory === category.id ? "is-active" : ""} key={category.id} onClick={() => setActiveCategory(category.id)}>{category.label}</button>)}
         </div>
         <div className="vp-menu-tools">
-          <label className="vp-search"><img src="/icons/search.svg" alt="" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm tên món..." aria-label="Tìm món" /></label>
+          <label className="vp-search"><Image src="/icons/search.svg" alt="" width={18} height={18} unoptimized /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm tên món..." aria-label="Tìm món" /></label>
           <Link className="vp-menu-add" href="/setup">Thêm món mới</Link>
         </div>
       </section>
