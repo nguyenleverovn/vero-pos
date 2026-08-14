@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   createMockCategory,
   createMockProduct,
@@ -24,7 +24,6 @@ export default function ProductSetupPage() {
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState<ProductCategoryId>("coffee");
   const [categoryName, setCategoryName] = useState("");
-  const [imageName, setImageName] = useState("");
   const [active, setActive] = useState(true);
   const [categories, setCategories] = useState<ProductCategory[]>(PRODUCT_CATEGORIES);
   const [products, setProducts] = useState<SetupProduct[]>([]);
@@ -56,10 +55,6 @@ export default function ProductSetupPage() {
     return () => { cancelled = true; };
   }, []);
 
-  function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
-    setImageName(event.target.files?.[0]?.name ?? "");
-  }
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canSave) return;
@@ -80,7 +75,6 @@ export default function ProductSetupPage() {
     setEditingId(null);
     setName("");
     setPrice("");
-    setImageName("");
     router.replace("/setup");
   }
 
@@ -100,11 +94,21 @@ export default function ProductSetupPage() {
     router.push("/");
   }
 
+  async function moveCategory(index: number, direction: -1 | 1) {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= categories.length) return;
+
+    const nextCategories = [...categories];
+    const [category] = nextCategories.splice(index, 1);
+    nextCategories.splice(targetIndex, 0, category);
+    setCategories(nextCategories);
+    await saveProductSetup({ categories: nextCategories, products, completed });
+  }
+
   function cancelEditing() {
     setEditingId(null);
     setName("");
     setPrice("");
-    setImageName("");
     setActive(true);
     setCategoryId(categories[0]?.id ?? "coffee");
     router.replace("/setup");
@@ -120,13 +124,6 @@ export default function ProductSetupPage() {
       </header>
 
       <form className="vp-setup-form" onSubmit={handleSubmit}>
-        <label className="vp-image-upload">
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-          <span className="vp-image-upload-icon" aria-hidden="true"><span /></span>
-          <strong>{imageName || "Tải ảnh lên"}</strong>
-          <small>Hỗ trợ tệp PNG, JPG dung lượng tối đa 5MB</small>
-        </label>
-
         <label className="vp-setup-field">
           <span>Tên món <b>*</b></span>
           <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ví dụ: Cà phê Muối" autoComplete="off" />
@@ -161,6 +158,21 @@ export default function ProductSetupPage() {
           </div>
         </label>
 
+        <section className="vp-category-order" aria-label="Sắp xếp danh mục">
+          <div><strong>Sắp xếp Danh mục</strong><span>Thứ tự này sẽ hiển thị trên thanh danh mục bán hàng.</span></div>
+          <ul>
+            {categories.map((category, index) => (
+              <li key={category.id}>
+                <span>{category.label}</span>
+                <div>
+                  <button type="button" onClick={() => moveCategory(index, -1)} disabled={index === 0} aria-label={`Đưa ${category.label} sang trái`}>←</button>
+                  <button type="button" onClick={() => moveCategory(index, 1)} disabled={index === categories.length - 1} aria-label={`Đưa ${category.label} sang phải`}>→</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         {products.length > 0 && (
           <section className="vp-setup-saved" aria-live="polite">
             <div className="vp-setup-saved-heading">
@@ -182,7 +194,7 @@ export default function ProductSetupPage() {
         )}
 
         <div className="vp-setup-actions">
-          <button className="vp-primary-button vp-save-product" type="submit" disabled={!canSave}>{editingId ? "Lưu thay đổi" : "Lưu món mới (1 chạm)"}</button>
+          <button className="vp-primary-button vp-save-product" type="submit" disabled={!canSave}>{editingId ? "Lưu thay đổi" : "Lưu món mới"}</button>
           {editingId ? <button className="vp-start-selling" type="button" onClick={cancelEditing}>Hủy chỉnh sửa</button> : products.length > 0 && <button className="vp-start-selling" type="button" onClick={handleStartSelling}>Bắt đầu bán hàng</button>}
         </div>
       </form>

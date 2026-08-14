@@ -1,7 +1,7 @@
 export function Header() {
   return (
     <header className="vp-brand-header">
-      <img className="vp-brand-lockup" src="/icons/vero-pos-brand-lockup.png" alt="VERO POS - CHẠM LÀ CHẠY" />
+      <img className="vp-brand-icon" src="/icons/vero-pos-icon.png" alt="VERO POS" />
     </header>
   );
 }
