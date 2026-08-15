@@ -7,7 +7,13 @@ import {
 
 const BACKUP_FORMAT = "vero-pos-backup";
 const BACKUP_VERSION = 1;
-const STORE_NAMES = Object.values(STORES);
+const STORE_NAMES = [
+  STORES.categories,
+  STORES.products,
+  STORES.settings,
+  STORES.orders
+] as const;
+const RESET_STORE_NAMES = Object.values(STORES);
 
 type BackupData = Record<(typeof STORE_NAMES)[number], unknown[]>;
 
@@ -77,14 +83,15 @@ export async function restoreBackup(backup: VeroPosBackup): Promise<void> {
 
 export async function resetVeroPosData(): Promise<void> {
   const database = await openVeroPosDatabase();
-  const transaction = database.transaction(STORE_NAMES, "readwrite");
+  const transaction = database.transaction(RESET_STORE_NAMES, "readwrite");
 
-  await Promise.all(STORE_NAMES.map((storeName) =>
+  await Promise.all(RESET_STORE_NAMES.map((storeName) =>
     requestToPromise(transaction.objectStore(storeName).clear())
   ));
   await transactionToPromise(transaction);
 
   if (typeof window !== "undefined") {
     window.localStorage.removeItem("vero-pos-product-setup-v1");
+    window.localStorage.removeItem("vero-pos-anonymous-installation-id");
   }
 }

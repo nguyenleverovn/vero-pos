@@ -19,6 +19,7 @@ import {
   loadProductSetup,
   saveProductSetup
 } from "@/lib/repositories/productSetupRepository";
+import { trackUsageEvent } from "@/lib/analytics/usageAnalytics";
 
 export default function ProductSetupPage() {
   const router = useRouter();
@@ -76,6 +77,7 @@ export default function ProductSetupPage() {
       : [...products, product];
     setProducts(nextProducts);
     await saveProductSetup({ categories, products: nextProducts, completed });
+    if (!editingId && products.length === 0) void trackUsageEvent("first_product_created");
     setEditingId(null);
     setName("");
     setPrice("");
@@ -96,6 +98,7 @@ export default function ProductSetupPage() {
 
   async function handleStartSelling() {
     await completeProductSetup(categories, products);
+    void trackUsageEvent("setup_completed");
     router.push("/");
   }
 

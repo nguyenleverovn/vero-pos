@@ -9,6 +9,7 @@ import { loadCatalog } from "@/lib/repositories/catalogRepository";
 import { PaymentMethod, saveOrder } from "@/lib/repositories/orderRepository";
 import { loadPaymentQrCode } from "@/lib/repositories/qrCodeRepository";
 import { WorkspaceMeta } from "@/components/WorkspaceMeta";
+import { trackUsageEvent } from "@/lib/analytics/usageAnalytics";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -36,6 +37,7 @@ export default function CheckoutPage() {
 
     try {
       await saveOrder(items, method);
+      void trackUsageEvent("order_completed");
       clearCart();
       router.replace("/");
     } finally {

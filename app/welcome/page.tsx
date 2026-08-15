@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { isProductSetupComplete } from "@/lib/repositories/productSetupRepository";
+import { trackUsageEvent } from "@/lib/analytics/usageAnalytics";
 
 const ENTRY_SESSION_KEY = "vero-pos:entered";
 
@@ -19,6 +20,7 @@ export default function WelcomePage() {
 
   function handleStart() {
     if (!ready) return;
+    void trackUsageEvent("welcome_started");
     window.sessionStorage.setItem(ENTRY_SESSION_KEY, "1");
     window.dispatchEvent(new Event("vero-pos:enter"));
     window.location.assign(setupCompleted ? "/" : "/setup");

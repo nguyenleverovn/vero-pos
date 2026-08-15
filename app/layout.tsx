@@ -1,10 +1,14 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import "./responsive.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { BottomNav } from "@/components/BottomNav";
 import { Sidebar } from "@/components/Sidebar";
 import { OnboardingGate } from "@/components/OnboardingGate";
+import { UsageAnalytics } from "@/components/UsageAnalytics";
+
+const cloudflareAnalyticsToken = process.env.NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN;
 
 export const metadata: Metadata = {
   applicationName: "VERO POS",
@@ -40,6 +44,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <BottomNav />
         </OnboardingGate>
         <ServiceWorkerRegister />
+        <UsageAnalytics />
+        {cloudflareAnalyticsToken ? (
+          <Script
+            id="cloudflare-web-analytics"
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={JSON.stringify({ token: cloudflareAnalyticsToken })}
+            strategy="afterInteractive"
+          />
+        ) : null}
       </body>
     </html>
   );
