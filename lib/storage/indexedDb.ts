@@ -1,11 +1,12 @@
 const DATABASE_NAME = "vero-pos-local";
-const DATABASE_VERSION = 1;
+const DATABASE_VERSION = 2;
 
 export const STORES = {
   categories: "categories",
   products: "products",
   settings: "settings",
-  orders: "orders"
+  orders: "orders",
+  analyticsEvents: "analytics-events"
 } as const;
 
 let databasePromise: Promise<IDBDatabase> | null = null;
@@ -50,6 +51,10 @@ export function openVeroPosDatabase(): Promise<IDBDatabase> {
       if (!database.objectStoreNames.contains(STORES.orders)) {
         const orders = database.createObjectStore(STORES.orders, { keyPath: "id" });
         orders.createIndex("createdAt", "createdAt");
+      }
+      if (!database.objectStoreNames.contains(STORES.analyticsEvents)) {
+        const analyticsEvents = database.createObjectStore(STORES.analyticsEvents, { keyPath: "id" });
+        analyticsEvents.createIndex("occurredAt", "occurredAt");
       }
     };
 

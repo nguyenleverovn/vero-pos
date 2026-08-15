@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { setInstallPrompt, VeroInstallPrompt } from "@/lib/pwa/installPrompt";
+import { trackUsageEvent } from "@/lib/analytics/usageAnalytics";
 
 export default function ServiceWorkerRegister() {
   useEffect(() => {
@@ -9,7 +10,10 @@ export default function ServiceWorkerRegister() {
       event.preventDefault();
       setInstallPrompt(event as VeroInstallPrompt);
     };
-    const clearInstallPrompt = () => setInstallPrompt(null);
+    const clearInstallPrompt = () => {
+      setInstallPrompt(null);
+      void trackUsageEvent("app_installed");
+    };
     const openCachedPageOffline = (event: MouseEvent) => {
       if (navigator.onLine || event.defaultPrevented || event.button !== 0) return;
       const target = event.target;
