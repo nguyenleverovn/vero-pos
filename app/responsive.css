@@ -25,7 +25,6 @@
 .vp-receipt-filters { display: flex; gap: 8px; margin: 4px 0 14px; }
 .vp-stat--cash { background: #eaf2ea; }
 .vp-stat--transfer { background: #ebf5fc; }
-.vp-receipt-detail { display: none; }
 .vp-report-kpis { display: grid; gap: 12px; }
 
 @media (min-width: 768px) {
@@ -153,7 +152,7 @@
   .vp-receipt-top strong:last-child { grid-column: 5; }
   .vp-receipt-bottom > span:first-child { grid-column: 3; grid-row: 1; }
   .vp-receipt-bottom .vp-payment-badge { grid-column: 4; grid-row: 1; justify-self: start; }
-  .vp-receipt-detail { display: inline-grid; grid-column: 6; grid-row: 1; place-items: center; border: 1px solid var(--vp-border); border-radius: 6px; padding: 5px 8px; font-size: 11px; font-weight: 800; }
+  .vp-receipt-detail-link { grid-column: 6; grid-row: 1; margin-top: 0; }
   .vp-qr-settings { margin: 12px 0 16px; }
   .vp-report-kpis { grid-template-columns: 1fr 1fr 1fr; }
   .vp-report-kpis .vp-hero-metric { grid-row: auto; }

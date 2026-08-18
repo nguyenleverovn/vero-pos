@@ -65,7 +65,7 @@ export default function CheckoutPage() {
               {qrCode ? <Image src={qrCode} alt="QR chuyển khoản" width={240} height={240} unoptimized /> : <p>Chưa có QR chuyển khoản. Thêm QR tại trang Hóa đơn.</p>}
             </div>
           )}
-          <button className="vp-primary-button vp-checkout-desktop-action" type="button" disabled={!canComplete} onClick={completeCheckout}>{isCompleting ? "ĐANG LƯU ĐƠN..." : "HOÀN TẤT & IN BILL"}</button>
+          <button className="vp-primary-button vp-checkout-desktop-action" type="button" disabled={!canComplete} onClick={completeCheckout}>{isCompleting ? "ĐANG LƯU ĐƠN..." : "HOÀN TẤT ĐƠN"}</button>
         </section>
         <aside className="vp-checkout-order-summary">
           <h2>Tóm tắt đơn hàng</h2>
@@ -75,7 +75,7 @@ export default function CheckoutPage() {
           <div className="vp-checkout-total"><span>Thanh toán</span><strong>{due.toLocaleString("vi-VN")}đ</strong></div>
         </aside>
       </div>
-      <div className="vp-action-panel"><button className="vp-primary-button" type="button" disabled={!canComplete} onClick={completeCheckout}>{isCompleting ? "ĐANG LƯU ĐƠN..." : "HOÀN TẤT & IN BILL"}</button></div>
+      <div className="vp-action-panel"><button className="vp-primary-button" type="button" disabled={!canComplete} onClick={completeCheckout}>{isCompleting ? "ĐANG LƯU ĐƠN..." : "HOÀN TẤT ĐƠN"}</button></div>
     </main>
   );
 }
