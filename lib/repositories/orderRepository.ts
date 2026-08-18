@@ -27,7 +27,7 @@ export type PosOrder = {
 type StoredPosOrder = Omit<PosOrder, "orderNumber"> & { orderNumber?: number };
 
 export function formatOrderCode(orderNumber: number) {
-  return `order${String(orderNumber).padStart(2, "0")}`;
+  return `Đơn ${orderNumber}`;
 }
 
 function createOrderId() {
