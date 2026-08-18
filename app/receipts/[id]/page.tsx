@@ -22,6 +22,7 @@ export default function ReceiptDetailPage() {
       <header className="vp-screen-heading vp-screen-heading--back">
         <Link className="vp-back" href="/receipts"><Image src="/icons/chevron-left.svg" alt="Quay lại" width={24} height={24} unoptimized /></Link>
         <h1>Chi tiết hóa đơn</h1>
+        {order && <button className="vp-receipt-print-desktop" type="button" onClick={() => window.print()}>IN HÓA ĐƠN</button>}
       </header>
       {order ? (
         <section className="vp-receipt-detail">

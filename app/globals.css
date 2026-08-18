@@ -221,6 +221,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .vp-receipt-detail-total strong { font-size: 20px; }
 .vp-receipt-detail-method span { font-size: 12px; }
 .vp-receipt-detail-actions { padding: 0 18px 18px; }
+.vp-receipt-print-desktop { display: none; }
 
 .vp-search { position: relative; margin-bottom: 20px; }
 .vp-search img { position: absolute; left: 12px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); }
