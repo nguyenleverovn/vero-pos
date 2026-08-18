@@ -56,6 +56,8 @@
   .vp-stat-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .vp-receipt-range { grid-template-columns: 1fr 1fr auto; align-items: end; }
   .vp-receipt-range button { grid-column: auto; min-width: 110px; }
+  .vp-receipt-print-desktop { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; margin-left: auto; border: 0; border-radius: 10px; background: var(--vp-primary); color: white; padding: 0 18px; font-weight: 800; cursor: pointer; }
+  .vp-receipt-detail-actions { display: none; }
   .vp-receipt-list,
   .vp-menu-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .vp-menu-toolbar { margin-bottom: 12px; }
